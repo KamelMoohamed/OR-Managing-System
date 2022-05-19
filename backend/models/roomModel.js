@@ -9,13 +9,19 @@ const roomSchema = new mongoose.Schema(
     },
     rtype: {
       type: String,
-      enum: ["Operation", "Recovery Room", "Store"],
+      enum: ["Operation", "Recovery Room", "Storage"],
       required: true,
     },
     capacity: {
       type: Number,
       default: 1,
     },
+    Equipments: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: "Equipment",
+      },
+    ],
     valid: Boolean,
     lastSterilazation: Date,
   },

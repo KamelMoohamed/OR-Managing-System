@@ -3,15 +3,18 @@ const validator = require("validator");
 
 const operationSchema = new mongoose.Schema(
   {
-    doctor: {
-      type: mongoose.Schema.ObjectId,
-      ref: "Doctor",
-      required: [true, "Please Metion Lead Doctor"],
-    },
+    doctors: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: "Doctor",
+        required: [true, "Please mention lead doctor"],
+      },
+    ],
     rooms: [
       {
         type: mongoose.Schema.ObjectId,
         ref: "Room",
+        required: [true, "Please mention the operation room"],
       },
     ],
     nurses: [
@@ -20,8 +23,21 @@ const operationSchema = new mongoose.Schema(
         ref: "Nurse",
       },
     ],
-    supplies: String,
-    timetable: [
+    patient: {
+      type: mongoose.Schema.ObjectId,
+      ref: "Patient",
+    },
+    supplies: [
+      {
+        type: {
+          type: String,
+        },
+        Quantity: {
+          type: Number,
+        },
+      },
+    ],
+    timeTable: [
       {
         start: {
           type: Date,
@@ -32,13 +48,21 @@ const operationSchema = new mongoose.Schema(
           required: [true, "Please include operation end time"],
         },
         rtype: {
-          type: mongoose.Schema.rtype,
+          type: mongoose.Schema.ObjectId,
           ref: "Room",
         },
       },
     ],
     price: Number,
-    reservationTime: Date,
+    reservationTime: {
+      type: Date,
+      default: Date.now(),
+    },
+    OperationStatus: {
+      type: String,
+      enum: ["On Schedule", "Done", "Canceled", "Postponed"],
+      default: "On Schedule",
+    },
   },
 
   {

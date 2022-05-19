@@ -39,7 +39,6 @@ const equipmentSchema = new mongoose.Schema(
         },
         details: {
           type: String,
-          required: [true, "Please include all details about this check up"],
         },
       },
     ],
