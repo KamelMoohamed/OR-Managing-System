@@ -3,10 +3,10 @@ const validator = require("validator");
 
 const operationSchema = new mongoose.Schema(
   {
-    doctors: [
+    staff: [
       {
         type: mongoose.Schema.ObjectId,
-        ref: "Doctor",
+        ref: "User",
         required: [true, "Please mention lead doctor"],
       },
     ],
@@ -17,12 +17,7 @@ const operationSchema = new mongoose.Schema(
         required: [true, "Please mention the operation room"],
       },
     ],
-    nurses: [
-      {
-        type: mongoose.Schema.ObjectId,
-        ref: "Nurse",
-      },
-    ],
+
     patient: {
       type: mongoose.Schema.ObjectId,
       ref: "Patient",

@@ -66,12 +66,6 @@ const patientSchema = new mongoose.Schema(
       default: true,
       select: false,
     },
-    Operations: [
-      {
-        type: mongoose.Schema.ObjectId,
-        ref: "Operation",
-      },
-    ],
     gender: {
       type: String,
       enum: ["female", "male"],
