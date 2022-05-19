@@ -31,6 +31,28 @@ exports.updateOne = (Model) =>
     });
   });
 
+const getDocById = (Model = CatchAsync(async (req, res, next) => {
+  const docID = req.params.pid;
+
+  let doc;
+  try {
+    doc = await Model.findById(docID);
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not find a place.",
+      500
+    );
+    return next(error);
+  }
+
+  if (!form) {
+    const error = new HttpError("Could not find a document for that ID.", 404);
+    return next(error);
+  }
+
+  res.json({ form: form.toObject({ getters: true }) });
+}));
+
 const deleteOne = (Model) =>
   CatchAsync(async (req, res, next) => {
     const docID = req.params.id;
