@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 
-const adminSchema = new mongoose.Schema(
+const userSchema = new mongoose.Schema(
   {
     SSN: {
       type: String,
@@ -36,8 +36,18 @@ const adminSchema = new mongoose.Schema(
     photo: String,
     role: {
       type: String,
-      enum: ["Lead-doctor", "training", "Assistant"],
-      default: "training",
+      enum: [
+        "lead-doctor",
+        "doctor-training",
+        "doctor-Assistant",
+        "lead-nurse",
+        "nurse",
+      ],
+      required: true,
+    },
+    major: {
+      type: String,
+      trim: true,
     },
     phone: [
       {
@@ -71,26 +81,6 @@ const adminSchema = new mongoose.Schema(
       default: true,
       select: false,
     },
-
-    worksSince: Date,
-    dependent: [
-      {
-        SSN: {
-          type: String,
-          unique: true,
-          required: true,
-        },
-        name: {
-          type: String,
-          required: true,
-        },
-        birthDate: Date,
-        gender: {
-          type: String,
-          enum: ["female", "male"],
-        },
-      },
-    ],
     gender: {
       type: String,
       enum: ["female", "male"],
@@ -104,5 +94,5 @@ const adminSchema = new mongoose.Schema(
   }
 );
 
-const Admin = mongoose.model("Admin", adminSchema);
-module.exports = Admin;
+const User = mongoose.model("User", userSchema);
+module.exports = User;

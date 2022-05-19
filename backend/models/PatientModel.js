@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 
-const adminSchema = new mongoose.Schema(
+const patientSchema = new mongoose.Schema(
   {
     SSN: {
       type: String,
@@ -11,19 +11,19 @@ const adminSchema = new mongoose.Schema(
     },
     fName: {
       type: String,
-      required: [true, "the doctor must have first name"],
+      required: [true, "the patient must have first name"],
       trim: true,
       validate: [validator.isAlpha, "User letters only in the name"],
     },
     mName: {
       type: String,
-      required: [true, "the doctor must have middle name"],
+      required: [true, "the patient must have middle name"],
       trim: true,
       validate: [validator.isAlpha, "User letters only in the name"],
     },
     lName: {
       type: String,
-      required: [true, "the doctor must have last name"],
+      required: [true, "the patient must have last name"],
       trim: true,
       validate: [validator.isAlpha, "User letters only in the name"],
     },
@@ -34,11 +34,6 @@ const adminSchema = new mongoose.Schema(
       lowercase: true,
     },
     photo: String,
-    role: {
-      type: String,
-      enum: ["Lead-doctor", "training", "Assistant"],
-      default: "training",
-    },
     phone: [
       {
         type: Number,
@@ -71,26 +66,6 @@ const adminSchema = new mongoose.Schema(
       default: true,
       select: false,
     },
-
-    worksSince: Date,
-    dependent: [
-      {
-        SSN: {
-          type: String,
-          unique: true,
-          required: true,
-        },
-        name: {
-          type: String,
-          required: true,
-        },
-        birthDate: Date,
-        gender: {
-          type: String,
-          enum: ["female", "male"],
-        },
-      },
-    ],
     gender: {
       type: String,
       enum: ["female", "male"],
@@ -104,5 +79,5 @@ const adminSchema = new mongoose.Schema(
   }
 );
 
-const Admin = mongoose.model("Admin", adminSchema);
-module.exports = Admin;
+const Patient = mongoose.model("Patient", patientSchema);
+module.exports = Patient;
