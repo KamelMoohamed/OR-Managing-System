@@ -31,9 +31,9 @@ exports.updateOne = (Model) =>
     });
   });
 
-const getDocById = (Model) =>
+const getOne = (Model) =>
   CatchAsync(async (req, res, next) => {
-    const docID = req.params.pid;
+    const docID = req.params.id;
 
     let doc;
     try {
@@ -46,7 +46,7 @@ const getDocById = (Model) =>
       return next(error);
     }
 
-    if (!form) {
+    if (!doc) {
       const error = new HttpError(
         "Could not find a document for that ID.",
         404
@@ -54,7 +54,7 @@ const getDocById = (Model) =>
       return next(error);
     }
 
-    res.json({ form: form.toObject({ getters: true }) });
+    res.json({ doc: doc.toObject({ getters: true }) });
   });
 
 const deleteOne = (Model) =>
