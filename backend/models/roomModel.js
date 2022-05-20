@@ -40,7 +40,7 @@ const roomSchema = new mongoose.Schema(
 roomSchema.pre(/^find/, function (next) {
   this.populate({
     path: "operations",
-    select: "-__v -_id -id",
+    select: "-__v -_id -rooms",
   });
   next();
 });
