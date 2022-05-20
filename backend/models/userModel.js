@@ -89,6 +89,12 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
     birthDate: Date,
+    schedule: [
+      {
+        start: Date,
+        end: Date,
+      },
+    ],
   },
   {
     toJSON: { virtuals: true },

@@ -33,22 +33,16 @@ const operationSchema = new mongoose.Schema(
         },
       },
     ],
-    timeTable: [
-      {
-        start: [
-          {
-            type: Date,
-            required: [true, "Please include operation start time"],
-          },
-        ],
-        end: [
-          {
-            type: Date,
-            required: [true, "Please include operation end time"],
-          },
-        ],
-      },
-    ],
+
+    start: {
+      type: Date,
+      required: [true, "Please include operation start time"],
+    },
+    end: {
+      type: Date,
+      required: [true, "Please include operation end time"],
+    },
+
     price: Number,
     reservationTime: {
       type: Date,
@@ -68,9 +62,12 @@ const operationSchema = new mongoose.Schema(
 );
 
 operationSchema.pre("save", async function (next) {
-  console.log(this);
   await Room.findByIdAndUpdate(this.rooms, {
     $push: { operations: this._id },
+  });
+  await User.findByIdAndUpdate(this.staff, {
+    $in: this.staff,
+    $push: { schedule: { start: this.start, end: this.end } },
   });
   next();
 });
