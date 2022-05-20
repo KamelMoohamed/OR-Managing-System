@@ -15,9 +15,19 @@ const operationSchema = new mongoose.Schema(
     ],
     rooms: [
       {
-        type: mongoose.Schema.ObjectId,
-        ref: "Room",
-        required: [true, "Please mention the operation room"],
+        room: {
+          type: mongoose.Schema.ObjectId,
+          ref: "Room",
+          required: [true, "Please mention the operation room"],
+        },
+        start: {
+          type: Date,
+          required: [true, "please mention the start time "],
+        },
+        end: {
+          type: Date,
+          required: [true, "please mention the start time "],
+        },
       },
     ],
 
@@ -34,15 +44,6 @@ const operationSchema = new mongoose.Schema(
         },
       },
     ],
-
-    start: {
-      type: Date,
-      required: [true, "Please include operation start time"],
-    },
-    end: {
-      type: Date,
-      required: [true, "Please include operation end time"],
-    },
 
     price: Number,
     reservationTime: {
@@ -62,6 +63,15 @@ const operationSchema = new mongoose.Schema(
   }
 );
 
+operationSchema.virtual("start").get(function () {
+  const rooms = this.rooms;
+  return rooms[0].start;
+});
+operationSchema.virtual("end").get(function () {
+  const rooms = this.rooms;
+  return rooms[rooms.length - 1].end;
+});
+
 operationSchema.pre("save", function (next) {
   const staff = this.staff;
 
@@ -79,14 +89,41 @@ operationSchema.pre("save", function (next) {
     if (times == 0) next();
   });
 });
+operationSchema.pre("save", function (next) {
+  const rooms = this.rooms;
+
+  rooms.forEach(async (element) => {
+    const Schedule = await Room.findById(element.room).select("schedule");
+    let times = 0;
+    console.log(Schedule);
+    Schedule["schedule"].forEach((element) => {
+      if (this.start <= element.end && element.start <= this.end) {
+        times = times + 1;
+        return next(new AppError("there is a reservation at this time", 500));
+        return 0;
+      }
+    });
+    if (times == 0) next();
+  });
+});
 
 operationSchema.pre("save", async function (next) {
-  await Room.findByIdAndUpdate(this.rooms, {
-    $push: { operations: this._id },
+  this.rooms.forEach(async (element) => {
+    console.log(element);
+    await Room.findByIdAndUpdate(element.room, {
+      $push: {
+        schedule: { start: element.start, end: element.end },
+      },
+    });
   });
+  this.rooms.forEach(async (element) => {
+    await Room.findByIdAndUpdate(element.room, {
+      $push: { operations: this._id },
+    });
+  });
+
   this.staff.forEach(async (element) => {
     await User.findByIdAndUpdate(element, {
-      $in: element,
       $push: { schedule: { start: this.start, end: this.end } },
     });
   });

@@ -30,6 +30,12 @@ const roomSchema = new mongoose.Schema(
     ],
     valid: Boolean,
     lastSterilazation: Date,
+    schedule: [
+      {
+        start: Date,
+        end: Date,
+      },
+    ],
   },
   {
     toJSON: { virtuals: true },
@@ -40,7 +46,7 @@ const roomSchema = new mongoose.Schema(
 roomSchema.pre(/^find/, function (next) {
   this.populate({
     path: "operations",
-    select: "-__v -_id -rooms",
+    select: "_id staff ",
   });
   next();
 });
