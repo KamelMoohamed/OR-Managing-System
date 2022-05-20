@@ -1,5 +1,5 @@
 const CatchAsync = require("../utils/CatchAsync");
-const HttpError = require("../utils/http-error");
+const appError = require("./../utils/appError");
 
 exports.CreateOne = (Model) =>
   CatchAsync(async (req, res, next) => {
@@ -20,7 +20,7 @@ exports.updateOne = (Model) =>
     });
 
     if (!doc) {
-      return next(new Error("No document with that id"));
+      return next(new appError("No document with that id", 404));
     }
 
     res.status(200).json({
@@ -36,25 +36,14 @@ const getOne = (Model) =>
     const docID = req.params.id;
 
     let doc;
-    try {
-      doc = await Model.findById(docID);
-    } catch (err) {
-      const error = new HttpError(
-        "Something went wrong, could not find a place.",
-        500
-      );
-      return next(error);
-    }
+    doc = await Model.findById(docID);
 
     if (!doc) {
-      const error = new HttpError(
-        "Could not find a document for that ID.",
-        404
-      );
+      const error = new appError("Could not find a document for that ID.", 404);
       return next(error);
     }
 
-    res.json({ doc: doc.toObject({ getters: true }) });
+    res.status(200).json({ doc: doc.toObject({ getters: true }) });
   });
 
 const deleteOne = (Model) =>
@@ -62,21 +51,14 @@ const deleteOne = (Model) =>
     const docID = req.params.id;
 
     let doc;
-    try {
-      doc = await Model.findByIdAndDelete(docID);
-    } catch (err) {
-      const error = new HttpError(
-        "Something went wrong, could not delete the Document.",
-        500
-      );
-      return next(error);
-    }
+    doc = await Model.findByIdAndDelete(docID);
+
     if (!doc) {
-      return next(new HttpError("No Document found with that ID", 404));
+      return next(new appError("No Document found with that ID", 404));
     }
 
     res.status(204).json({ status: "success", data: null });
   });
 
 exports.deleteOne = deleteOne;
-exports.getDocById = getDocById;
+exports.getOne = getOne;

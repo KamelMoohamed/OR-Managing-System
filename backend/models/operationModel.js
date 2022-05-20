@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
+const User = require("./userModel");
 
 const operationSchema = new mongoose.Schema(
   {
@@ -65,6 +66,10 @@ const operationSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
+
+operationSchema.pre("save", function () {
+  console.log(this);
+});
 
 const Operation = mongoose.model("Operation", operationSchema);
 module.exports = Operation;
