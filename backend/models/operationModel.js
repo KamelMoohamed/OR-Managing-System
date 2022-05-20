@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const User = require("./userModel");
 const Room = require("./roomModel");
+const AppError = require("../utils/appError");
 
 const operationSchema = new mongoose.Schema(
   {
@@ -61,14 +62,35 @@ const operationSchema = new mongoose.Schema(
   }
 );
 
+operationSchema.pre("save", function (next) {
+  const staff = this.staff;
+
+  staff.forEach(async (element) => {
+    const Schedule = await User.findById(element).select("schedule");
+    let times = 0;
+    Schedule["schedule"].forEach((element) => {
+      if (this.start <= element.end && element.start <= this.end) {
+        times = times + 1;
+        console.log(times);
+        return next(new AppError("there is a reservation at this time", 500));
+        return 0;
+      }
+    });
+    if (times == 0) next();
+  });
+});
+
 operationSchema.pre("save", async function (next) {
   await Room.findByIdAndUpdate(this.rooms, {
     $push: { operations: this._id },
   });
-  await User.findByIdAndUpdate(this.staff, {
-    $in: this.staff,
-    $push: { schedule: { start: this.start, end: this.end } },
+  this.staff.forEach(async (element) => {
+    await User.findByIdAndUpdate(element, {
+      $in: element,
+      $push: { schedule: { start: this.start, end: this.end } },
+    });
   });
+
   next();
 });
 
@@ -80,7 +102,7 @@ operationSchema.pre(/^find/, function (next) {
   })
     .populate({
       path: "staff",
-      select: "-__v -_id ",
+      select: "fName lName role phone ",
     })
     .populate({
       path: "patient",
