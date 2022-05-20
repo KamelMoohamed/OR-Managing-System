@@ -11,6 +11,10 @@ const operationSchema = new mongoose.Schema(
         type: mongoose.Schema.ObjectId,
         ref: "User",
         required: [true, "Please mention lead doctor"],
+        validate: async function () {
+          const user = await User.findById(this.patient);
+          return user.role != "patient" && user.role != "officer";
+        },
       },
     ],
     rooms: [
@@ -33,7 +37,12 @@ const operationSchema = new mongoose.Schema(
 
     patient: {
       type: mongoose.Schema.ObjectId,
-      ref: "Patient",
+      ref: "User",
+      validate: async function () {
+        const user = await User.findById(this.patient);
+        return user.role == "patient";
+      },
+      required: true,
     },
     supplies: [
       {
@@ -81,7 +90,6 @@ operationSchema.pre("save", function (next) {
     Schedule["schedule"].forEach((element) => {
       if (this.start <= element.end && element.start <= this.end) {
         times = times + 1;
-        console.log(times);
         return next(new AppError("there is a reservation at this time", 500));
         return 0;
       }
@@ -120,6 +128,12 @@ operationSchema.pre("save", async function (next) {
     await Room.findByIdAndUpdate(element.room, {
       $push: { operations: this._id },
     });
+  });
+  await User.findByIdAndUpdate(this.patient, {
+    $push: {
+      schedule: { start: this.start, end: this.end },
+      operations: this._id,
+    },
   });
 
   this.staff.forEach(async (element) => {

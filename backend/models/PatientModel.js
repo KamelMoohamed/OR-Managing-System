@@ -9,21 +9,9 @@ const patientSchema = new mongoose.Schema(
       unique: true,
       required: true,
     },
-    fName: {
+    Name: {
       type: String,
       required: [true, "the patient must have first name"],
-      trim: true,
-      validate: [validator.isAlpha, "User letters only in the name"],
-    },
-    mName: {
-      type: String,
-      required: [true, "the patient must have middle name"],
-      trim: true,
-      validate: [validator.isAlpha, "User letters only in the name"],
-    },
-    lName: {
-      type: String,
-      required: [true, "the patient must have last name"],
       trim: true,
       validate: [validator.isAlpha, "User letters only in the name"],
     },

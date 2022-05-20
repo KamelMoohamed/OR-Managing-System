@@ -10,23 +10,10 @@ const userSchema = new mongoose.Schema(
       unique: true,
       required: true,
     },
-    fName: {
+    Name: {
       type: String,
       required: [true, "the doctor must have first name"],
       trim: true,
-      validate: [validator.isAlpha, "User letters only in the name"],
-    },
-    mName: {
-      type: String,
-      required: [true, "the doctor must have middle name"],
-      trim: true,
-      validate: [validator.isAlpha, "User letters only in the name"],
-    },
-    lName: {
-      type: String,
-      required: [true, "the doctor must have last name"],
-      trim: true,
-      validate: [validator.isAlpha, "User letters only in the name"],
     },
     email: {
       type: String,
@@ -44,6 +31,8 @@ const userSchema = new mongoose.Schema(
         "doctor-Assistant",
         "lead-nurse",
         "nurse",
+        "officer",
+        "patient",
       ],
       required: true,
     },
@@ -93,6 +82,33 @@ const userSchema = new mongoose.Schema(
       {
         start: Date,
         end: Date,
+      },
+    ],
+    operations: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: "Operation",
+      },
+    ],
+    Scans: [{ type: String }],
+    History: String,
+    worksSince: Date,
+    dependent: [
+      {
+        SSN: {
+          type: String,
+          unique: true,
+          required: true,
+        },
+        name: {
+          type: String,
+          required: true,
+        },
+        birthDate: Date,
+        gender: {
+          type: String,
+          enum: ["female", "male"],
+        },
       },
     ],
   },
