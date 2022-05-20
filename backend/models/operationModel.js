@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 const User = require("./userModel");
+const Room = require("./roomModel");
 
 const operationSchema = new mongoose.Schema(
   {
@@ -25,9 +26,8 @@ const operationSchema = new mongoose.Schema(
     },
     supplies: [
       {
-        type: {
-          type: String,
-        },
+        type: mongoose.Schema.ObjectId,
+        ref: "Supply",
         Quantity: {
           type: Number,
         },
@@ -35,18 +35,18 @@ const operationSchema = new mongoose.Schema(
     ],
     timeTable: [
       {
-        start: {
-          type: Date,
-          required: [true, "Please include operation start time"],
-        },
-        end: {
-          type: Date,
-          required: [true, "Please include operation end time"],
-        },
-        rtype: {
-          type: mongoose.Schema.ObjectId,
-          ref: "Room",
-        },
+        start: [
+          {
+            type: Date,
+            required: [true, "Please include operation start time"],
+          },
+        ],
+        end: [
+          {
+            type: Date,
+            required: [true, "Please include operation end time"],
+          },
+        ],
       },
     ],
     price: Number,
@@ -67,8 +67,29 @@ const operationSchema = new mongoose.Schema(
   }
 );
 
-operationSchema.pre("save", function () {
-  console.log(this);
+// operationSchema.pre("save", async function (next) {
+//   console.log(this);
+//   await Room.findByIdAndUpdate(this.rooms[0], {
+//     operations: operations.push(this),
+//   });
+//   next();
+// });
+
+//Populating from other documents
+operationSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "rooms",
+    select: "-__v -_id -id -operations",
+  })
+    .populate({
+      path: "staff",
+      select: "-__v -_id -id",
+    })
+    .populate({
+      path: "patient",
+      select: "-__v -_id -id",
+    });
+  next();
 });
 
 const Operation = mongoose.model("Operation", operationSchema);
