@@ -67,27 +67,27 @@ const operationSchema = new mongoose.Schema(
   }
 );
 
-// operationSchema.pre("save", async function (next) {
-//   console.log(this);
-//   await Room.findByIdAndUpdate(this.rooms[0], {
-//     operations: operations.push(this),
-//   });
-//   next();
-// });
+operationSchema.pre("save", async function (next) {
+  console.log(this);
+  await Room.findByIdAndUpdate(this.rooms, {
+    $push: { operations: this._id },
+  });
+  next();
+});
 
 //Populating from other documents
 operationSchema.pre(/^find/, function (next) {
   this.populate({
     path: "rooms",
-    select: "-__v -_id -id -operations",
+    select: "-__v -_id -operations",
   })
     .populate({
       path: "staff",
-      select: "-__v -_id -id",
+      select: "-__v -_id ",
     })
     .populate({
       path: "patient",
-      select: "-__v -_id -id",
+      select: "-__v -_id ",
     });
   next();
 });
