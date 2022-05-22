@@ -3,6 +3,7 @@ const validator = require("validator");
 const User = require("./userModel");
 const Room = require("./roomModel");
 const AppError = require("../utils/appError");
+const { findById } = require("./userModel");
 
 const operationSchema = new mongoose.Schema(
   {
@@ -11,10 +12,6 @@ const operationSchema = new mongoose.Schema(
         type: mongoose.Schema.ObjectId,
         ref: "User",
         required: [true, "Please mention lead doctor"],
-        validate: async function () {
-          const user = await User.findById(this.patient);
-          return user.role != "patient" && user.role != "officer";
-        },
       },
     ],
     rooms: [
@@ -38,10 +35,10 @@ const operationSchema = new mongoose.Schema(
     patient: {
       type: mongoose.Schema.ObjectId,
       ref: "User",
-      validate: async function () {
-        const user = await User.findById(this.patient);
-        return user.role == "patient";
-      },
+      // validate: async function () {
+      //   const user = await User.findById(this.patient);
+      //   return user.role == "patient";
+      // },
       required: true,
     },
     supplies: [
@@ -81,9 +78,71 @@ operationSchema.virtual("end").get(function () {
   return rooms[rooms.length - 1].end;
 });
 
+operationSchema.pre("findOneAndUpdate", async function (next) {
+  const { _id } = this.getQuery();
+  const doc = await Operation.findById(_id);
+  doc.staff.forEach(async (element) => {
+    const Schedule = await User.findById(element).select("schedule");
+    let count = 0;
+
+    Schedule["schedule"].forEach((element) => {
+      if (element.operation.equals(doc._id)) {
+        count += 1;
+      }
+    });
+    await User.findById(element, function (err, document) {
+      document.schedule[count] = {
+        start: doc.start,
+        end: doc.end,
+        operation: doc._id,
+      };
+      document.markModified("schedule");
+      document.save();
+    }).clone();
+  });
+  const Pschedule = doc.patient["schedule"];
+  let count = 0;
+
+  Pschedule.forEach((element) => {
+    if (element.operation.equals(doc._id)) {
+      count += 1;
+    }
+  });
+  await User.findById(doc.patient._id, function (err, document) {
+    console.log(document.schedule);
+    document.schedule[count] = {
+      start: doc.start,
+      end: doc.end,
+      operation: doc._id,
+    };
+    document.markModified("schedule");
+    document.save();
+  }).clone();
+
+  doc.rooms.forEach(async (element) => {
+    const Schedule = await Room.findById(element.room).select("schedule");
+    let count = 0;
+    let counter = 0;
+    Schedule["schedule"].forEach((element) => {
+      if (element.operation.equals(doc._id)) {
+        count += 1;
+      }
+    });
+    await Room.findById(element.room, function (err, document) {
+      document.schedule[count] = {
+        start: doc.rooms[counter].start,
+        end: doc.rooms[counter].end,
+        operation: doc._id,
+      };
+      document.markModified("schedule");
+      document.save();
+    }).clone();
+    counter += 1;
+  });
+});
+
 operationSchema.pre("save", function (next) {
   const staff = this.staff;
-
   staff.forEach(async (element) => {
     const Schedule = await User.findById(element).select("schedule");
     let times = 0;
@@ -99,11 +158,9 @@ operationSchema.pre("save", function (next) {
 });
 operationSchema.pre("save", function (next) {
   const rooms = this.rooms;
-
   rooms.forEach(async (element) => {
     const Schedule = await Room.findById(element.room).select("schedule");
     let times = 0;
-    console.log(Schedule);
     Schedule["schedule"].forEach((element) => {
       if (this.start <= element.end && element.start <= this.end) {
         times = times + 1;
@@ -116,11 +173,15 @@ operationSchema.pre("save", function (next) {
 });
 
 operationSchema.pre("save", async function (next) {
+  if (!this.isNew) return next();
   this.rooms.forEach(async (element) => {
-    console.log(element);
     await Room.findByIdAndUpdate(element.room, {
       $push: {
-        schedule: { start: element.start, end: element.end },
+        schedule: {
+          start: element.start,
+          end: element.end,
+          operation: this._id,
+        },
       },
     });
   });
@@ -131,14 +192,16 @@ operationSchema.pre("save", async function (next) {
   });
   await User.findByIdAndUpdate(this.patient, {
     $push: {
-      schedule: { start: this.start, end: this.end },
+      schedule: { start: this.start, end: this.end, operation: this._id },
       operations: this._id,
     },
   });
 
   this.staff.forEach(async (element) => {
     await User.findByIdAndUpdate(element, {
-      $push: { schedule: { start: this.start, end: this.end } },
+      $push: {
+        schedule: { start: this.start, end: this.end, operation: this._id },
+      },
     });
   });
 
@@ -157,7 +220,7 @@ operationSchema.pre(/^find/, function (next) {
     })
     .populate({
       path: "patient",
-      select: "-__v -_id ",
+      select: "-__v ",
     });
   next();
 });

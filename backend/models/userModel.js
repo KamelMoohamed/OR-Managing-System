@@ -80,6 +80,10 @@ const userSchema = new mongoose.Schema(
     birthDate: Date,
     schedule: [
       {
+        operation: {
+          type: mongoose.Schema.ObjectId,
+          ref: "Operation",
+        },
         start: Date,
         end: Date,
       },
