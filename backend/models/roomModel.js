@@ -32,10 +32,6 @@ const roomSchema = new mongoose.Schema(
     lastSterilazation: Date,
     schedule: [
       {
-        operation: {
-          type: mongoose.Schema.ObjectId,
-          ref: "Operation",
-        },
         start: Date,
         end: Date,
       },
