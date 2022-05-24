@@ -5,11 +5,25 @@ const authController = require("../Controllers/authController");
 const router = express.Router();
 
 router.post("/login", authController.login);
-router.route("/").post(userController.createUser);
+router
+  .route("/createuser")
+  .post(
+    authController.protect,
+    authController.restrictTo("admin"),
+    userController.createUser
+  );
 router
   .route("/:id")
   .get(authController.protect, userController.getUser)
-  .delete(userController.deleteUser)
-  .patch(userController.updateUser);
+  .delete(
+    authController.protect,
+    authController.restrictTo("admin"),
+    userController.deleteUser
+  )
+  .patch(
+    authController.protect,
+    authController.restrictTo("admin"),
+    userController.updateUser
+  );
 
 module.exports = router;

@@ -33,6 +33,7 @@ const userSchema = new mongoose.Schema(
         "nurse",
         "officer",
         "patient",
+        "admin",
       ],
       required: true,
     },
