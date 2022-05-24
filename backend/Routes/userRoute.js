@@ -24,6 +24,7 @@ router
     authController.protect,
     authController.restrictTo("admin"),
     userController.updateUser
-  );
+  )
+  .patch(authController.protect, userController.updateMe);
 
 module.exports = router;
