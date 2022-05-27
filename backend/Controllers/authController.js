@@ -11,36 +11,55 @@ const userToken = (id) => {
   });
 };
 
-const login = CatchAsync(async (req, res, next) => {
+const createSendToken = (user, statusCode, res) => {
+  const token = userToken(user._id);
+  const cookieOptions = {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+  };
+
+  res.cookie("jwt", token, cookieOptions);
+
+  user.password = undefined;
+
+  res.status(statusCode).json({
+    status: "success",
+    token,
+    data: {
+      user,
+    },
+  });
+};
+
+exports.login = CatchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return new appError("Please provide both email and password", 400);
+    return next(new appError("Please provide both email and password", 400));
   }
 
   const user = await User.findOne({ email: email }).select("+password");
-  const correct = await User.correctPassword(password, user.password);
+  const correct = await user.correctPassword(password, user.password);
 
   if (!user || !correct) {
-    return new appError("Incorrect email or password", 401);
+    return next(new appError("Incorrect email or password", 401));
   }
 
-  const token = userToken(user._id);
-  res.status(200).json({
-    status: "success",
-    token: token,
-  });
+  createSendToken(user, 200, res);
 });
 
-const protect = CatchAsync(async (req, res, next) => {
+exports.protect = CatchAsync(async (req, res, next) => {
+  let token;
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer")
   ) {
-    const token = req.headers.authorization.split(" ")[1];
+    token = req.headers.authorization.split(" ")[1];
   }
   if (!token) {
-    return new AppError("You aren't logged in!", 401);
+    return next(new AppError("You aren't logged in!", 401));
   }
 
   const decodedData = await promisify(jwt.verify)(
@@ -48,21 +67,20 @@ const protect = CatchAsync(async (req, res, next) => {
     process.env.JWT_SECRET
   );
 
-  const currentlyUser = User.findById(decodedData.id);
+  const currentlyUser = await User.findById(decodedData.id);
   if (!currentlyUser) {
-    return new AppError("The token dosen't longer exist.", 401);
+    return next(new AppError("The token dosen't longer exist.", 401));
   }
-  if (!currentlyUser.changePasswordAfter(decodedData.id)) {
-    return new AppError(
-      "User recently changed password! please log in again.",
-      401
+  if (currentlyUser.changePasswordAfter(decodedData.iat)) {
+    return next(
+      new AppError("User recently changed password! please log in again.", 401)
     );
   }
   req.user = currentlyUser;
   next();
 });
 
-const restrictTo = (...roles) => {
+exports.restrictTo = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
       return next(
@@ -75,7 +93,3 @@ const restrictTo = (...roles) => {
     next();
   };
 };
-
-exports.login = login;
-exports.protect = protect;
-exports.restrictTo = restrictTo;
