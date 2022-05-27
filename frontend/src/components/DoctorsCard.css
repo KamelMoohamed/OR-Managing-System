@@ -1,0 +1,21 @@
+.doctors-card {
+  width: 100%;
+  margin: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
+  border-radius: 6px;
+  padding: 1rem;
+  overflow: hidden;
+  background: white;
+  align-content: center;
+}
+
+.doctors-card img {
+  width: 90%;
+  height: 10%;
+  border-radius: 20px;
+  border-color: aqua;
+}
+
+.doctors-card p {
+  text-align: center;
+}

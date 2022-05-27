@@ -7,6 +7,7 @@ import Login from "./pages/Login";
 import About from "./pages/About";
 import AboutUS from "./pages/AboutUS";
 import Staff from "./pages/Staff";
+import Footer from "./shared/Footer/Footer";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="/staff" element={<Staff />} exact></Route>
         </Routes>
       </main>
+      <Footer />
     </Router>
   );
 }

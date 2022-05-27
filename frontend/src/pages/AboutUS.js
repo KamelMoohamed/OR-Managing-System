@@ -1,7 +1,18 @@
 import React from "react";
+import PersonCard from "../components/PersonCard";
+import Image from "../Source/test.jpg";
 
 const AboutUS = () => {
-  return <h1>about US Page</h1>;
+  const person = {
+    image: Image,
+    name: "Kamel Mohamed",
+    additionalInfo: "Full-Stack web developer",
+  };
+  return (
+    <div>
+      <PersonCard person={person} />
+    </div>
+  );
 };
 
 export default AboutUS;

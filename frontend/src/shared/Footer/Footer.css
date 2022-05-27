@@ -1,0 +1,14 @@
+.footer {
+  margin-top: 2rem;
+  background-color: darkgrey;
+  height: 15rem;
+  width: 100%;
+}
+
+.footer h2 {
+  margin-left: 7%;
+}
+
+.footer p {
+  margin-left: 7%;
+}
