@@ -239,7 +239,6 @@ operationSchema.pre("findOneAndDelete", async function (next) {
       { multi: true }
     );
   });
-  console.log(doc.patient);
   await User.findByIdAndUpdate(
     doc.patient.id,
     { $pull: { schedule: { operation: doc._id } } },

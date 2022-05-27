@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.post("/login", authController.login);
 router
-  .route("/createuser")
+  .route("/")
   .post(
     authController.protect,
     authController.restrictTo("admin"),

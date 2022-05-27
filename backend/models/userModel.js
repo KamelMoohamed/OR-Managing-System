@@ -34,6 +34,7 @@ const userSchema = new mongoose.Schema(
         "officer",
         "patient",
         "admin",
+        "ORadmin",
       ],
       required: true,
     },

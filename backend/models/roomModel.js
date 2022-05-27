@@ -24,8 +24,10 @@ const roomSchema = new mongoose.Schema(
     ],
     equipments: [
       {
-        type: mongoose.Schema.ObjectId,
-        ref: "Equipment",
+        equipment: {
+          type: mongoose.Schema.ObjectId,
+          ref: "Equipment",
+        },
       },
     ],
     valid: Boolean,

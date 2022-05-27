@@ -5,10 +5,10 @@ const authController = require("../Controllers/authController");
 const router = express.Router();
 
 router
-  .route("/create_operation")
+  .route("/")
   .post(
     authController.protect,
-    authController.restrictTo("officer"),
+    authController.restrictTo("officer", "admin"),
     operationController.createOperation
   );
 router
@@ -16,12 +16,12 @@ router
   .get(authController.protect, operationController.getOperation)
   .delete(
     authController.protect,
-    authController.restrictTo("officer", "lead-doctor"),
+    authController.restrictTo("officer", "lead-doctor", "admin"),
     operationController.deleteOperation
   )
   .patch(
     authController.protect,
-    authController.restrictTo("officer", "lead-doctor"),
+    authController.restrictTo("officer", "lead-doctor", "admin"),
     operationController.updateOperation
   );
 
