@@ -78,12 +78,12 @@ const userSchema = new mongoose.Schema(
         end: Date,
       },
     ],
-    operations: [
-      {
-        type: mongoose.Schema.ObjectId,
-        ref: "Operation",
-      },
-    ],
+    // operations: [
+    //   {
+    //     type: mongoose.Schema.ObjectId,
+    //     ref: "Operation",
+    //   },
+    // ],
     Scans: [{ type: String }],
     History: String,
     worksSince: Date,
@@ -111,6 +111,17 @@ const userSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
+
+// userSchema.pre(/^find/, function (next) {
+//   this.populate({
+//     path: "schedule",
+//     populate: {
+//       path: "operation",
+//     },
+//   });
+
+//   next();
+// });
 
 userSchema.pre("save", async function (next) {
   // Only run this function if password was actually modified

@@ -6,6 +6,15 @@ const router = express.Router();
 
 router.post("/login", authController.login);
 router
+  .route("/myUpOps")
+  .get(authController.protect, userController.getUpcomingOperations);
+router
+  .route("/myPrevOps")
+  .get(authController.protect, userController.getPerviousOperations);
+router
+  .route("/patients")
+  .get(authController.protect, userController.getMyPatients);
+router
   .route("/")
   .post(
     authController.protect,

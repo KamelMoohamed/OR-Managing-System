@@ -9,6 +9,7 @@ const equipmentSchema = new mongoose.Schema(
       required: [true, "Please include the equipment name"],
       trim: true,
     },
+    factory: String,
     durationBetweenCheckup: {
       type: Number,
       required: [

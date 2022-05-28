@@ -77,6 +77,7 @@ exports.protect = CatchAsync(async (req, res, next) => {
     );
   }
   req.user = currentlyUser;
+
   next();
 });
 

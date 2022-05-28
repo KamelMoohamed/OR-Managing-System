@@ -11,10 +11,6 @@ const operationSchema = new mongoose.Schema(
         type: mongoose.Schema.ObjectId,
         ref: "User",
         required: [true, "Please mention lead doctor"],
-        // validate: async function () {
-        //   const user = await User.findById(this.patient);
-        //   return user.role != "patient" && user.role != "officer";
-        // },
       },
     ],
     rooms: [
@@ -38,10 +34,6 @@ const operationSchema = new mongoose.Schema(
     patient: {
       type: mongoose.Schema.ObjectId,
       ref: "User",
-      // validate: async function () {
-      //   const user = await User.findById(this.patient);
-      //   return user.role == "patient";
-      // },
       required: true,
     },
     supplies: [
