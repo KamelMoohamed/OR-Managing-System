@@ -6,6 +6,11 @@ const router = express.Router();
 
 router
   .route("/")
+  .get(
+    authController.protect,
+    authController.restrictTo("officer", "admin"),
+    operationController.getAllOperations
+  )
   .post(
     authController.protect,
     authController.restrictTo("officer", "admin"),
