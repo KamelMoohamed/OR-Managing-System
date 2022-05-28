@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const AppError = require("../utils/appError");
+const Room = require("./roomModel");
 
 const equipmentSchema = new mongoose.Schema(
   {
@@ -7,6 +9,7 @@ const equipmentSchema = new mongoose.Schema(
       required: [true, "Please include the equipment name"],
       trim: true,
     },
+    factory: String,
     durationBetweenCheckup: {
       type: Number,
       required: [
@@ -26,6 +29,14 @@ const equipmentSchema = new mongoose.Schema(
       type: mongoose.Schema.ObjectId,
       ref: "Room",
       required: [true, "Equipment Loction Must be included"], //Could be modified according to admin input
+    },
+    previousRoom: {
+      type: mongoose.Schema.ObjectId,
+      ref: "Room",
+      default: function () {
+        return this.room;
+      },
+      select: false,
     },
     Checkups: [
       {
@@ -48,6 +59,62 @@ const equipmentSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
+
+equipmentSchema.pre("save", async function (next) {
+  Room.findByIdAndUpdate(
+    this.room,
+    {
+      $push: {
+        equipments: {
+          equipment: this.id,
+        },
+      },
+    },
+    (err) => {
+      return next(new AppError("there is no room with this Id", 400));
+    }
+  );
+});
+
+equipmentSchema.pre("findOneAndDelete", async function (next) {
+  const { _id } = this.getQuery();
+  const doc = await Equipment.findById(_id);
+  if (!doc)
+    return next(new AppError("there is no Equipment with that id", 500));
+  await Room.findByIdAndUpdate(
+    doc.room,
+    { $pull: { equipments: { equipment: doc._id } } },
+    { multi: true }
+  );
+
+  next();
+});
+
+equipmentSchema.pre("findOneAndUpdate", async function (next) {
+  const { _id } = this.getQuery();
+  const doc = await Equipment.findById(_id).select("previousRoom room");
+  if (!doc)
+    return next(new AppError("there is no Equipment with that id", 500));
+  await Room.findByIdAndUpdate(
+    doc.previousRoom,
+    { $pull: { equipments: { equipment: doc._id } } },
+    { multi: true }
+  );
+  Room.findByIdAndUpdate(
+    doc.room,
+    {
+      $push: {
+        equipments: {
+          equipment: doc._id,
+        },
+      },
+    },
+    (err) => {
+      return next(new AppError("there is no room with this Id", 500));
+    }
+  );
+  next();
+});
 
 const Equipment = mongoose.model("Equipment", equipmentSchema);
 module.exports = Equipment;

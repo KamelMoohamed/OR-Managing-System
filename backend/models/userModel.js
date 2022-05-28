@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
+const bcrypt = require("bcrypt");
 
 const userSchema = new mongoose.Schema(
   {
@@ -9,28 +10,16 @@ const userSchema = new mongoose.Schema(
       unique: true,
       required: true,
     },
-    fName: {
+    Name: {
       type: String,
       required: [true, "the doctor must have first name"],
       trim: true,
-      validate: [validator.isAlpha, "User letters only in the name"],
-    },
-    mName: {
-      type: String,
-      required: [true, "the doctor must have middle name"],
-      trim: true,
-      validate: [validator.isAlpha, "User letters only in the name"],
-    },
-    lName: {
-      type: String,
-      required: [true, "the doctor must have last name"],
-      trim: true,
-      validate: [validator.isAlpha, "User letters only in the name"],
     },
     email: {
       type: String,
       unique: true,
       validate: [validator.isEmail, "please provide a valid email"],
+      required: true,
       lowercase: true,
     },
     photo: String,
@@ -42,6 +31,10 @@ const userSchema = new mongoose.Schema(
         "doctor-Assistant",
         "lead-nurse",
         "nurse",
+        "officer",
+        "patient",
+        "admin",
+        "ORadmin",
       ],
       required: true,
     },
@@ -63,18 +56,6 @@ const userSchema = new mongoose.Schema(
       minlength: 8,
       select: false,
     },
-    passwordConfirm: {
-      type: String,
-      required: [true, "please insert a password"],
-      minlength: 8,
-      select: false,
-      validate: {
-        validator: function (el) {
-          return el == this.password;
-        },
-        message: "Passwords are not the same!",
-      },
-    },
     passwordChangedAt: Date,
     active: {
       type: Boolean,
@@ -87,12 +68,104 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
     birthDate: Date,
+    schedule: [
+      {
+        operation: {
+          type: mongoose.Schema.ObjectId,
+          ref: "Operation",
+        },
+        start: Date,
+        end: Date,
+      },
+    ],
+    // operations: [
+    //   {
+    //     type: mongoose.Schema.ObjectId,
+    //     ref: "Operation",
+    //   },
+    // ],
+    Scans: [{ type: String }],
+    History: String,
+    worksSince: Date,
+    dependent: [
+      {
+        SSN: {
+          type: String,
+          unique: true,
+          required: true,
+        },
+        name: {
+          type: String,
+          required: true,
+        },
+        birthDate: Date,
+        gender: {
+          type: String,
+          enum: ["female", "male"],
+        },
+      },
+    ],
   },
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
   }
 );
+
+// userSchema.pre(/^find/, function (next) {
+//   this.populate({
+//     path: "schedule",
+//     populate: {
+//       path: "operation",
+//     },
+//   });
+
+//   next();
+// });
+
+userSchema.pre("save", async function (next) {
+  // Only run this function if password was actually modified
+  if (!this.isModified("password")) return next();
+
+  // Hash the password with cost of 12
+  this.password = await bcrypt.hash(this.password, 12);
+
+  // Delete passwordConfirm field
+  // this.passwordConfirm = undefined;
+  next();
+});
+
+userSchema.pre("save", function (next) {
+  if (!this.isModified("password") || this.isNew) return next();
+
+  this.passwordChangedAt = Date.now() - 1000;
+  next();
+});
+
+userSchema.pre(/^find/, function (next) {
+  // this points to the current query
+  this.find({ active: { $ne: false } });
+  next();
+});
+
+userSchema.methods.correctPassword = async function (
+  enteredPassword,
+  userPassword
+) {
+  return await bcrypt.compare(enteredPassword, userPassword);
+};
+
+userSchema.methods.changePasswordAfter = function (JWTTimestamp) {
+  if (this.passwordChangedAt) {
+    const changedTimeStamp = parseInt(
+      this.passwordChangedAt.getTime() / 1000,
+      10
+    );
+    return JWTTimestamp < changedTimeStamp;
+  }
+
+  return false;
+};
 
 const User = mongoose.model("User", userSchema);
 module.exports = User;
