@@ -87,6 +87,12 @@ const userSchema = new mongoose.Schema(
     Scans: [{ type: String }],
     History: String,
     worksSince: Date,
+    pendingRequests: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: "Request",
+      },
+    ],
     dependent: [
       {
         SSN: {

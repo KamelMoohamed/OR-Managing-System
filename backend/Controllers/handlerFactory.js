@@ -1,10 +1,14 @@
 const CatchAsync = require("../utils/CatchAsync");
 const appError = require("./../utils/appError");
 const APIFeatures = require("./../utils/ApiFeatures");
-
+const Request = require("./../models/requestModel");
 exports.CreateOne = (Model) =>
   CatchAsync(async (req, res, next) => {
     const newDoc = await Model.create(req.body);
+    if (Model === Request) {
+      newDoc.doctor = req.user._id;
+      await newDoc.save();
+    }
     res.status(201).json({
       status: "success",
       data: {
@@ -32,7 +36,7 @@ exports.updateOne = (Model) =>
     });
   });
 
-const getOne = (Model) =>
+exports.getOne = (Model) =>
   CatchAsync(async (req, res, next) => {
     const docID = req.params.id;
 
@@ -47,7 +51,7 @@ const getOne = (Model) =>
     res.status(200).json({ doc: doc.toObject({ getters: true }) });
   });
 
-const deleteOne = (Model) =>
+exports.deleteOne = (Model) =>
   CatchAsync(async (req, res, next) => {
     const docID = req.params.id;
 
@@ -83,5 +87,11 @@ exports.getAll = (Model) =>
     });
   });
 
-exports.deleteOne = deleteOne;
-exports.getOne = getOne;
+// const idChecker = (Model, id) =>
+//   CatchAsync(async () => {
+//     doc = await Model.findById(id);
+//     if (!doc) {
+//       return false;
+//     }
+//     return true;
+//   });
