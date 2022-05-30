@@ -3,17 +3,19 @@ const AppError = require("./appError");
 const updateSchedule = async (doc, Model, userId, start, end) => {
   const User = await Model.findById(userId);
   if (!User.schedule) return false;
-
-  let count = 0;
-
-  User.schedule.forEach((element) => {
-    if (element.operation.equals(doc._id)) {
-      count += 1;
-    }
+  const Ids = User.schedule.map((el) => {
+    return el.operation;
   });
-  console.log(count);
+  let index = null;
+  for (let i = 0; i < Ids.length; i++) {
+    if (Ids[i].equals(doc._id)) {
+      index = i;
+      break;
+    }
+  }
+  if (index == null) index = Ids.length;
 
-  User.schedule[count] = {
+  User.schedule[index] = {
     start: start,
     end: end,
     operation: doc._id,
