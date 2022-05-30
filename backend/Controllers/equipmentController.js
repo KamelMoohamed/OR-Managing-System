@@ -53,6 +53,25 @@ const needCalibtation = CatchAsync(async (req, res, next) => {
   });
 });
 
+exports.getAvailableEquip = async (start, end, name, next) => {
+  const equips = await Equipment.find({ name: name });
+
+  let num = 0;
+  equips.forEach((element) => {
+    for (var i = element.schedule.length - 1; i >= 0; i--)
+      if (
+        start <= element.schedule[i].end &&
+        element.schedule[i].start <= end
+      ) {
+        times = times + 1;
+      }
+  });
+  if (num >= equips.length)
+    return next(
+      new AppError(`there is no available ${name} for this time`, 500)
+    );
+};
+
 exports.getEquipment = handlerFactory.getOne(Equipment);
 exports.createEquipment = handlerFactory.CreateOne(Equipment);
 exports.updateEquipment = handlerFactory.updateOne(Equipment);

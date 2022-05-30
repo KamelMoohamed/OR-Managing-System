@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const User = require("./userModel");
 const Room = require("./roomModel");
+const Equipment = require("./equipmentModel");
 const AppError = require("../utils/appError");
 const Scheduling = require("./../utils/Scheduling");
 const req = require("express/lib/request");
@@ -21,6 +22,22 @@ const operationSchema = new mongoose.Schema(
           type: mongoose.Schema.ObjectId,
           ref: "Room",
           required: [true, "Please mention the operation room"],
+        },
+        start: {
+          type: Date,
+          required: [true, "please mention the start time "],
+        },
+        end: {
+          type: Date,
+          required: [true, "please mention the start time "],
+        },
+      },
+    ],
+    equipments: [
+      {
+        equip: {
+          type: mongoose.Schema.ObjectId,
+          ref: "Equipment",
         },
         start: {
           type: Date,
@@ -126,6 +143,16 @@ operationSchema.pre("save", async function (next) {
       next
     );
   }
+  const equips = this.equipments;
+  for (element of equips) {
+    await Scheduling.checkRoomSchedule(
+      element.start,
+      element.end,
+      Equipment,
+      element.equip,
+      next
+    );
+  }
   next();
 });
 
@@ -134,6 +161,9 @@ operationSchema.pre("save", async function (next) {
   if (!this.isNew) return next();
   for (element of this.rooms) {
     await Scheduling.addRoomSchedule(this, Room, element);
+  }
+  for (element of this.equipments) {
+    await Scheduling.addRoomSchedule(this, Equipment, element);
   }
   await Scheduling.addUserSchedule(this, User, this.patient);
   for (element of this.staff) {
@@ -151,6 +181,9 @@ operationSchema.pre("findOneAndDelete", async function (next) {
   for (element of doc.rooms) {
     await Scheduling.deleteSchedule(doc, Room, element.room);
   }
+  for (element of doc.equipments) {
+    await Scheduling.deleteSchedule(doc, Equipment, element.room);
+  }
   await Scheduling.deleteSchedule(doc, User, doc.patient);
 
   next();
@@ -162,6 +195,10 @@ operationSchema.pre(/^find/, function (next) {
     path: "rooms",
     select: "-__v -_id -operations",
   })
+    .populate({
+      path: "equipments",
+      select: "-__v -_id -operations",
+    })
     .populate({
       path: "staff",
       select: "fName lName role phone ",

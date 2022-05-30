@@ -15,6 +15,10 @@ const equipmentSchema = new mongoose.Schema(
       trim: true,
     },
     factory: String,
+    type: {
+      type: String,
+      enum: ["Static", "Dynamic"],
+    },
     durationBetweenCheckup: {
       type: Number,
       required: [
@@ -36,6 +40,7 @@ const equipmentSchema = new mongoose.Schema(
       required: [true, "Equipment Loction Must be included"], //Could be modified according to admin input
     },
     previousRoom: {
+      // Atribute for static equip
       type: mongoose.Schema.ObjectId,
       ref: "Room",
       default: function () {
@@ -56,6 +61,17 @@ const equipmentSchema = new mongoose.Schema(
         details: {
           type: String,
         },
+      },
+    ],
+    schedule: [
+      // Atribute for dynamic equip
+      {
+        operation: {
+          type: mongoose.Schema.ObjectId,
+          ref: "Operation",
+        },
+        start: Date,
+        end: Date,
       },
     ],
   },
