@@ -22,10 +22,10 @@ html {
   font-family: "Open Sans", sans-serif;
 }
 
-body {
+/* body {
   margin: 0;
   background: #4d4d4d;
-}
+} */
 
 .slide-in-left-enter {
   transform: translateX(-100%);
@@ -48,9 +48,9 @@ body {
   transition: all 200ms;
 }
 
-.center {
+/* .center {
   text-align: center;
   display: flex;
   justify-content: center;
   align-items: center;
-}
+} */

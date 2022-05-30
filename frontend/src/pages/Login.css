@@ -8,8 +8,63 @@
   max-width: 25rem;
   margin: 7rem auto;
   text-align: center;
+  overflow: visible;
 }
 
 .login form {
   margin-bottom: 1rem;
+}
+
+.login img {
+  width: 100%;
+  padding: 0;
+}
+#Group_3 {
+  position: absolute;
+  width: 1920px;
+  height: 982px;
+  left: 0px;
+  top: 92px;
+  overflow: visible;
+}
+
+#Rectangle_15_m {
+  fill: url(#Rectangle_15_m);
+}
+.Rectangle_15_m {
+  position: absolute;
+  overflow: visible;
+  width: 1920px;
+  height: 982px;
+  left: 0px;
+  top: 0px;
+}
+
+#Path_3_o {
+  opacity: 0.3;
+  fill: url(#Path_3_o);
+}
+.Path_3_o {
+  mix-blend-mode: screen;
+  overflow: visible;
+  position: absolute;
+  width: 1920px;
+  height: 881.1px;
+  left: 0px;
+  top: 0px;
+  transform: matrix(1, 0, 0, 1, 0, 0);
+}
+#Path_4 {
+  opacity: 0.3;
+  fill: rgba(62, 201, 180, 1);
+}
+.Path_4 {
+  mix-blend-mode: multiply;
+  overflow: visible;
+  position: absolute;
+  width: 16%;
+  height: 982px;
+  left: 1616.566px;
+  top: 0px;
+  transform: matrix(1, 0, 0, 1, 0, 0);
 }

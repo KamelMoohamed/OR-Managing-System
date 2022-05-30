@@ -1,7 +1,11 @@
 import React from "react";
-
+import Section1 from "../components/HomePage/Section1";
 const Home = () => {
-  return <h1>home Page</h1>;
+  return (
+    <div>
+      <Section1 />
+    </div>
+  );
 };
 
 export default Home;

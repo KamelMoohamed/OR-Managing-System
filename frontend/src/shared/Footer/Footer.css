@@ -1,6 +1,6 @@
 .footer {
   margin-top: 2rem;
-  background-color: darkgrey;
+  background-color: rgb(235, 235, 235);
   height: 15rem;
   width: 100%;
 }
@@ -11,4 +11,10 @@
 
 .footer p {
   margin-left: 7%;
+}
+
+.footer img {
+  margin-top: 1%;
+  margin-left: 6.3%;
+  height: 30%;
 }
