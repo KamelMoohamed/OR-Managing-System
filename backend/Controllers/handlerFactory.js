@@ -68,7 +68,10 @@ exports.deleteOne = (Model) =>
 exports.getAll = (Model) =>
   CatchAsync(async (req, res, next) => {
     let filter = {};
-    if (req.params.tourId) filter = { tour: req.params.tourId };
+    if (req.body) {
+      if (req.body.role === "officer") filter = { status: "open" };
+      else if (req.body.role === "ORadmin") filter = { status: "To admin" };
+    }
 
     const features = new APIFeatures(Model.find(filter), req.query)
       .filter()
