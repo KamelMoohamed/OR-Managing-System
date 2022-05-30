@@ -38,23 +38,5 @@ const requestSchema = new mongoose.Schema({
   },
 });
 
-requestSchema.post("save", async function () {
-  await User.findByIdAndUpdate(this.doctor, {
-    $push: {
-      pendingRequests: this._id,
-    },
-  });
-});
-
-requestSchema.pre(/^findOneAnd/, async function (next) {
-  this.r = await this.findOne();
-  //console.log(this.r.doctor);
-
-  if (this.r.status !== "Pending") {
-    await User.findByIdAndUpdate(this.r.doctor, {});
-  }
-  next();
-});
-
 const Request = mongoose.model("Request", requestSchema);
 module.exports = Request;

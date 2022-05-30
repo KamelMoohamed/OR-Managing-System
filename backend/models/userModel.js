@@ -10,9 +10,9 @@ const userSchema = new mongoose.Schema(
       unique: true,
       required: true,
     },
-    Name: {
+    name: {
       type: String,
-      required: [true, "the doctor must have first name"],
+      required: [true, "the User must have first name"],
       trim: true,
     },
     email: {
@@ -36,7 +36,7 @@ const userSchema = new mongoose.Schema(
         "admin",
         "ORadmin",
       ],
-      required: true,
+      default: "patient",
     },
     major: {
       type: String,
@@ -78,21 +78,11 @@ const userSchema = new mongoose.Schema(
         end: Date,
       },
     ],
-    // operations: [
-    //   {
-    //     type: mongoose.Schema.ObjectId,
-    //     ref: "Operation",
-    //   },
-    // ],
+
     Scans: [{ type: String }],
     History: String,
     worksSince: Date,
-    pendingRequests: [
-      {
-        type: mongoose.Schema.ObjectId,
-        ref: "Request",
-      },
-    ],
+
     dependent: [
       {
         SSN: {

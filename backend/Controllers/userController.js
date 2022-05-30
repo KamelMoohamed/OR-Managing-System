@@ -3,6 +3,7 @@ const User = require("./../models/userModel");
 const CatchAsync = require("../utils/CatchAsync");
 const AppError = require("../utils/appError");
 const Operation = require("./../models/operationModel");
+const Request = require("./../models/requestModel");
 const mongoose = require("mongoose");
 
 exports.updateMe = CatchAsync(async (req, res, next) => {
@@ -71,16 +72,37 @@ exports.getUpcomingOperations = CatchAsync(async (req, res, next) => {
 });
 
 exports.getPerviousOperations = CatchAsync(async (req, res, next) => {
-  //Continued afte API Features
-  const user = await User.findById(req.user.id);
-  if (!user) {
-    return next(new AppError("No User with that id", 404));
+  const ops = await Operation.find({
+    rooms: { $elemMatch: { end: { $gte: Date.now() } } },
+  });
+
+  let preOps = [];
+
+  for (var i = ops.length - 1; i >= 0; i--) {
+    users = ops[i].staff;
+    for (var j = users.length - 1; j >= 0; j--)
+      if (users[j].id === req.user.id) {
+        preOps.push(ops[i]);
+      }
   }
 
   res.status(200).json({
     status: "success",
     operations: {
-      ops,
+      preOps,
+    },
+  });
+});
+
+exports.getPendingRequests = CatchAsync(async (req, res, next) => {
+  const requests = await Request.find({
+    status: "Pending",
+    doctor: req.user,
+  });
+  res.status(200).json({
+    status: "success",
+    requests: {
+      requests,
     },
   });
 });

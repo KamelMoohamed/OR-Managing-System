@@ -4,10 +4,14 @@ const authController = require("../Controllers/authController");
 
 const router = express.Router();
 
+router.post("/signup", authController.signup);
 router.post("/login", authController.login);
 router
   .route("/myUpOps")
   .get(authController.protect, userController.getUpcomingOperations);
+router
+  .route("/requests")
+  .get(authController.protect, userController.getPendingRequests);
 router
   .route("/myPrevOps")
   .get(authController.protect, userController.getPerviousOperations);

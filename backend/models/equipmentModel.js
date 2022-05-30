@@ -4,6 +4,11 @@ const Room = require("./roomModel");
 
 const equipmentSchema = new mongoose.Schema(
   {
+    EID: {
+      type: Number,
+      required: [true, "Please include equipment Id"],
+      unique: true,
+    },
     name: {
       type: String,
       required: [true, "Please include the equipment name"],
