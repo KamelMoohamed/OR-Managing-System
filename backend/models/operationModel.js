@@ -102,12 +102,12 @@ operationSchema.virtual("end").get(function () {
 operationSchema.post("findOneAndUpdate", async function () {
   const { _id } = this.getQuery();
   const doc = await Operation.findById(_id);
-  // const removedRooms = Scheduling.checkRoomChange(req.rooms, doc.rooms);
-  // if (removedRooms) {
-  //   for (element of removedRooms) {
-  //     await Scheduling.deleteSchedule(doc, Room, element.room, element.start);
-  //   }
-  // }
+  const removedRooms = Scheduling.checkRoomChange(req.rooms, doc.rooms);
+  if (removedRooms) {
+    for (element of removedRooms) {
+      await Scheduling.deleteSchedule(doc, Room, element.room, element.start);
+    }
+  }
   for (element of doc.staff) {
     await Scheduling.updateSchedule(doc, User, element, doc.start, doc.end);
   }
@@ -153,6 +153,7 @@ operationSchema.pre("save", async function (next) {
       next
     );
   }
+  req.rooms = this.rooms;
   next();
 });
 
@@ -169,6 +170,7 @@ operationSchema.pre("save", async function (next) {
   for (element of this.staff) {
     await Scheduling.addUserSchedule(this, User, element);
   }
+
   next();
 });
 

@@ -88,7 +88,6 @@ const deleteSchedule = async (doc, Model, id, start = null) => {
 
 const checkRoomChange = (oldRooms, newRooms) => {
   for (var a = [], i = 0; i < oldRooms.length; i++) {
-    console.log(oldRooms[i], newRooms[i]);
     if (oldRooms[i].room != newRooms[i].room) a.push(oldRooms[i]);
   }
   return a;

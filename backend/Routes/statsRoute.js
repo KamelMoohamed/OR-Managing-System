@@ -19,5 +19,11 @@ router
     authController.restrictTo("ORadmin"),
     statsController.staffWorkingHours
   );
-
+router
+  .route("/operation-each")
+  .get(
+    authController.protect,
+    authController.restrictTo("ORadmin"),
+    statsController.operationEach
+  );
 module.exports = router;

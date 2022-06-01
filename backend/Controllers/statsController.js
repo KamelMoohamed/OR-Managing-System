@@ -1,5 +1,6 @@
 const CatchAsync = require("./../utils/CatchAsync");
 const User = require("./../models/userModel");
+const Operation = require("./../models/operationModel");
 
 const staffNumber = CatchAsync(async (req, res, next) => {
   let groupby = {};
@@ -75,5 +76,47 @@ const staffWorkingHours = CatchAsync(async (req, res, next) => {
   });
 });
 
+const operationEach = CatchAsync(async (req, res, next) => {
+  let group = {};
+  let groupdate = {};
+  if (req.body.groupdate) {
+    if (req.body.groupdate == "day") groupdate["$dayOfWeek"] = "$rooms.end";
+    else if (req.body.groupdate == "week") groupdate["$week"] = "$rooms.end";
+    else if (req.body.groupdate == "month") groupdate["$month"] = "$rooms.end";
+    else if (req.body.groupdate == "year") groupdate["$year"] == "$rooms.end";
+    group[req.body.groupdate] = groupdate;
+  }
+  let match = {};
+  let start = {};
+  if (req.body.start) {
+    start["$gte"] = new Date(req.body.start);
+  }
+  if (req.body.end) {
+    start["$lte"] = new Date(req.body.end);
+    match["rooms.end"] = start;
+  }
+  if (req.body.field) {
+    group[req.body.field] = `$${req.body.field}`;
+  }
+  const data = await Operation.aggregate([
+    {
+      $unwind: "$rooms",
+    },
+    {
+      $match: match,
+    },
+    {
+      $group: {
+        _id: group,
+        number: { $sum: 0.5 },
+      },
+    },
+  ]);
+  res.status(200).json({
+    data,
+  });
+});
+
 exports.staffNumber = staffNumber;
 exports.staffWorkingHours = staffWorkingHours;
+exports.operationEach = operationEach;
