@@ -31,10 +31,29 @@ const requestSchema = new mongoose.Schema({
     enum: ["Cash", "Insurance"],
     required: [true, "please mention payment method"],
   },
+  nurseSSN: {
+    type: Number,
+    required: [true, "Please Mention nurse for this request"],
+    validate: [
+      async function (nurseSSN) {
+        nurse = await User.findOne({ SSN: nurseSSN });
+        if (nurse) return true;
+        return false;
+      },
+      "No Nurse found with this SSN",
+    ],
+  },
+  supplies: [
+    {
+      name: String,
+      Quantity: Number,
+    },
+  ],
+
   status: {
     type: String,
-    enum: ["Approved", "Pending"],
-    default: "Pending",
+    enum: ["Approved", " Admin Pending", "Nurse Pending"],
+    default: "Nurse Pending",
   },
 });
 

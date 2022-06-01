@@ -95,10 +95,21 @@ exports.getPerviousOperations = CatchAsync(async (req, res, next) => {
 });
 
 exports.getPendingRequests = CatchAsync(async (req, res, next) => {
-  const requests = await Request.find({
-    status: "Pending",
-    doctor: req.user,
-  });
+  if (req.user.role === "lead-doctor") {
+    const requests = await Request.find({
+      status: { $in: ["OR Pending", "Nurse Pending"] },
+      doctor: req.user,
+    });
+  } else if (req.user.role === "lead-nurse" || req.user.role === "nurse") {
+    const requests = await Request.find({
+      status: { $in: ["Nurse Pending"] },
+      nurse: req.user,
+    });
+  } else if (req.user.role === "ORadmin") {
+    const requests = await Request.find({
+      status: { $in: ["OR Pending"] },
+    });
+  }
   res.status(200).json({
     status: "success",
     requests: {

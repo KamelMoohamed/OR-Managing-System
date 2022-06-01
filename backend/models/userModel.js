@@ -82,6 +82,20 @@ const userSchema = new mongoose.Schema(
     Scans: [{ type: String }],
     History: String,
     worksSince: Date,
+    emergencyday: {
+      type: Number,
+      min: 0,
+      max: 6,
+    },
+    type: {
+      type: String,
+      enum: [
+        "Anesthesiologist",
+        "Cardiologists",
+        "Gastroenterologists",
+        "Neurologists",
+      ],
+    },
 
     dependent: [
       {

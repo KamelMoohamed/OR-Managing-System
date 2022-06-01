@@ -9,6 +9,14 @@ const req = require("express/lib/request");
 
 const operationSchema = new mongoose.Schema(
   {
+    type: {
+      type: String,
+      enum: ["Emergency", "Outpatient"],
+    },
+    depart: {
+      type: String,
+      enum: ["cardio", "Gastroenterology", "Neurology"],
+    },
     staff: [
       {
         type: mongoose.Schema.ObjectId,
