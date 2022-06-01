@@ -6,6 +6,7 @@ exports.createRoom = handlerFactory.CreateOne(Room);
 exports.getRoom = handlerFactory.getOne(Room, { path: "operations" });
 exports.deleteRoom = handlerFactory.deleteOne(Room);
 exports.updateRoom = handlerFactory.updateOne(Room);
+exports.getAllRooms = handlerFactory.getAll(Room);
 
 exports.getAvailableRooms = catchAsync(async (req, res, next) => {
   const roomType = req.query.type;
@@ -128,10 +129,6 @@ const dateConverter = (date, hour, val) => {
   }
   var isodate = date2.toISOString();
   return isodate;
-};
-
-const checkDayBetween = (d1, d2, d3) => {
-  d3 > d1 && d3 < d2 ? true : false;
 };
 
 var getDaysBetween = function (from, to) {

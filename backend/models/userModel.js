@@ -91,9 +91,9 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: [
         "Anesthesiologist",
-        "Cardiologists",
-        "Gastroenterologists",
-        "Neurologists",
+        "Cardiologist",
+        "Gastroenterologist",
+        "Neurologist",
       ],
     },
 

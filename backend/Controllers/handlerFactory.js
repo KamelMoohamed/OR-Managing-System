@@ -89,12 +89,3 @@ exports.getAll = (Model) =>
       },
     });
   });
-
-// const idChecker = (Model, id) =>
-//   CatchAsync(async () => {
-//     doc = await Model.findById(id);
-//     if (!doc) {
-//       return false;
-//     }
-//     return true;
-//   });

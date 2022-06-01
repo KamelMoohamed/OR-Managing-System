@@ -19,6 +19,13 @@ router
   .route("/patients")
   .get(authController.protect, userController.getMyPatients);
 router
+  .route("/emergency")
+  .get(
+    authController.protect,
+    authController.restrictTo("ORadmin"),
+    userController.availableDoctor
+  );
+router
   .route("/")
   .post(
     authController.protect,

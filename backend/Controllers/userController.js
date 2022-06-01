@@ -117,7 +117,23 @@ exports.getPendingRequests = CatchAsync(async (req, res, next) => {
     },
   });
 });
+exports.availableDoctor = CatchAsync(async (req, res, next) => {
+  const doctors = await User.find({
+    role: { $in: ["lead-doctor", "doctor", "doctor-Assistant"] },
+    emergencyday: new Date().getDay(),
+    type: req.query.type,
+  });
+  const nurses = await User.find({
+    role: { $in: ["lead-nurse", "nurse"] },
+    emergencyday: new Date().getDay(),
+  });
+  res.status(200).json({
+    status: "success",
 
+    AvailableDoctors: doctors,
+    Availablenurses: nurses,
+  });
+});
 exports.createUser = handlerFactory.CreateOne(User);
 exports.getUser = handlerFactory.getOne(User);
 exports.deleteUser = handlerFactory.deleteOne(User);

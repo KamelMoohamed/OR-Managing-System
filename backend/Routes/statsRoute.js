@@ -26,4 +26,25 @@ router
     authController.restrictTo("ORadmin"),
     statsController.operationEach
   );
+router
+  .route("/rooms")
+  .get(
+    authController.protect,
+    authController.restrictTo("ORadmin"),
+    statsController.rooms
+  );
+router
+  .route("/busyrooms")
+  .get(
+    authController.protect,
+    authController.restrictTo("ORadmin"),
+    statsController.busyRooms
+  );
+router
+  .route("/roomshours")
+  .get(
+    authController.protect,
+    authController.restrictTo("ORadmin"),
+    statsController.RoomsHours
+  );
 module.exports = router;
