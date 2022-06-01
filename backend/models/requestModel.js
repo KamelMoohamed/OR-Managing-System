@@ -52,9 +52,13 @@ const requestSchema = new mongoose.Schema({
 
   status: {
     type: String,
-    enum: ["Approved", " Admin Pending", "Nurse Pending"],
+    enum: ["Approved", "Admin Pending", "Nurse Pending"],
     default: "Nurse Pending",
   },
+});
+
+requestSchema.pre("findOneAndUpdate", () => {
+  if (req.body.user == "lead-nurse") this.status = "Admin Pending";
 });
 
 const Request = mongoose.model("Request", requestSchema);

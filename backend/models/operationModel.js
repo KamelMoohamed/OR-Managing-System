@@ -3,7 +3,6 @@ const validator = require("validator");
 const User = require("./userModel");
 const Room = require("./roomModel");
 const Equipment = require("./equipmentModel");
-const AppError = require("../utils/appError");
 const Scheduling = require("./../utils/Scheduling");
 const req = require("express/lib/request");
 
@@ -65,10 +64,14 @@ const operationSchema = new mongoose.Schema(
     },
     supplies: [
       {
-        type: mongoose.Schema.ObjectId,
-        ref: "Supply",
-        Quantity: {
+        id: {
+          type: mongoose.Schema.ObjectId,
+          ref: "Supply",
+          required: [true, "please enter supply id"],
+        },
+        quantity: {
           type: Number,
+          required: [true, "please enter supply quanitity"],
         },
       },
     ],

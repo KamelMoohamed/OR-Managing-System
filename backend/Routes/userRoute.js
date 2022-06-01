@@ -11,7 +11,12 @@ router
   .get(authController.protect, userController.getUpcomingOperations);
 router
   .route("/requests")
-  .get(authController.protect, userController.getPendingRequests);
+  .get(
+    authController.protect,
+    authController.restrictTo("lead-doctor", "lead-nurse", "ORadmin", "admin"),
+    userController.userInBody,
+    userController.getPendingRequests
+  );
 router
   .route("/myPrevOps")
   .get(authController.protect, userController.getPerviousOperations);

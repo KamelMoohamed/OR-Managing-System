@@ -11,6 +11,11 @@ router
     authController.protect,
     authController.restrictTo("officer", "admin", "ORadmin"),
     supplyController.createSupply
+  )
+  .get(
+    authController.protect,
+    authController.restrictTo("officer", "admin", "ORadmin"),
+    supplyController.getAllSupply
   );
 
 router
@@ -19,6 +24,21 @@ router
     authController.protect,
     authController.restrictTo("ORadmin", "admin"),
     orAdminController.addSupplies
+  );
+router
+  .route("/needed")
+  .get(
+    authController.protect,
+    authController.restrictTo("ORadmin", "admin"),
+    supplyController.getInNeed
+  );
+
+router
+  .route("/check")
+  .get(
+    authController.protect,
+    authController.restrictTo("ORadmin", "admin"),
+    supplyController.checkSupplies
   );
 
 router

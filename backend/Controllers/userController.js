@@ -134,6 +134,11 @@ exports.availableDoctor = CatchAsync(async (req, res, next) => {
     Availablenurses: nurses,
   });
 });
+exports.userInBody = (req, res, next) => {
+  req.body.role = req.user.role;
+  next();
+};
+
 exports.createUser = handlerFactory.CreateOne(User);
 exports.getUser = handlerFactory.getOne(User);
 exports.deleteUser = handlerFactory.deleteOne(User);
