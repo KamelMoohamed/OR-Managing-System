@@ -1,15 +1,23 @@
-.home-section1 .or-photo {
-  margin-left: 61%;
-  width: 50%;
-  margin-top: 0;
+.home-section1{
+    width: 100%;
+    display: flex;
+    overflow: auto;
+    min-height: 100vh;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
 }
 
-.home-section1 .logo {
-  height: 1%;
-  margin-right: 90%;
-  margin-top: 0;
+.shape-under-images{
+    height: 80rem;
+    width: 40.5%;
+    border-radius: 25rem 0 25rem 0;
+    margin-left: auto;
+    margin-right: 0;
+    margin-top: -75px;
+    background-image: linear-gradient(120deg, #0173BC , #3EC9B4);
 }
 
-.home-section1 {
-  width: 90%;
+.image{
+    height: 500px;
 }

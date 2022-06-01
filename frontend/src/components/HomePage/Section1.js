@@ -1,18 +1,14 @@
 import React from "react";
 import "./Section1.css";
-import orPhoto from "../../Source/or.jpg";
-import logo from "../../Source/logo.jpg";
+import interior from '../../assets/interior-view-operating-room.png'
+import surgeon_digital from '../../assets/surgeon-using-digital-tablet-operation-theater.png'
+import surgeon_inter from '../../assets/surgeons-interacting-with-each-other-operation-room1.png'
 
 const Section1 = () => {
-  return (
-    <div className="home-section1">
-      <img className="or-photo" src={orPhoto} />
-      <img className="logo" src={logo} />
-      <p>Cairo University Operation Rooms</p>
-      <p>Cairo University Operation Rooms</p>
-      <p>Cairo University Operation Rooms</p>
-    </div>
-  );
+    return (
+        <div className="home-section1">
+        </div>
+);
 };
 
 export default Section1;

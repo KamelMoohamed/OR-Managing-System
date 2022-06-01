@@ -1,8 +1,8 @@
 import React from "react";
 import PersonCard from "../components/PersonCard";
 import DoctorsCard from "../components/DoctorsCard";
-import doctorsImg from "../Source/doctors.jpg";
-import personImg from "../Source/test.jpg";
+import doctorsImg from "../assets/doctors.jpg";
+import personImg from "../assets/test.jpg";
 
 const Staff = () => {
   const person = {

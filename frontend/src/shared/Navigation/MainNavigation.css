@@ -1,45 +1,149 @@
-.main-navigation__menu-btn {
-  width: 3rem;
-  height: 3rem;
-  background: transparent;
-  border: none;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  margin-right: 2rem;
-  cursor: pointer;
+*,
+*::after,
+*::before {
+  margin: 0;
+  box-sizing: border-box;
+}
+html {
+  font-size: 62.5%;
+}
+body {
+  font-family: Montserrat, sans-serif;
+  font-size: 1.6rem;
+  background-color: #61dafb;
 }
 
-.main-navigation__menu-btn span {
-  display: block;
-  width: 3rem;
-  height: 2.5px;
-  background: white;
+.logo{
+  height: 7rem;
 }
-
-.main-navigation__title {
-  color: white;
+li {
+  list-style: none;
 }
-
-.main-navigation__title a {
+a {
   text-decoration: none;
-  color: white;
+  color: rgb(0, 0, 0);
+  font-weight: bold;
+  font-size: 1.4rem;
+}
+a:hover{
+  color: rgb(1, 115, 188);
+  transition: 0.5s ease;
 }
 
-.main-navigation__header-nav {
+a:active. a.active{
+  color: rgb(1, 115, 188);
+}
+
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  height: 8vh;
+  background: rgb(255, 255, 255);
+}
+
+.nav__brand {
+  text-transform: uppercase;
+}
+
+.nav__menu {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 4rem;
+}
+.nav__toggler {
   display: none;
 }
-
-.main-navigation__drawer-nav {
-  height: 100%;
+.nav__toggler div {
+  width: 2.5rem;
+  height: 0.2rem;
+  margin: 0.4rem;
+  background: rgb(204, 204, 204);
+  transition: 0.3s ease-in;
 }
 
-@media (min-width: 768px) {
-  .main-navigation__menu-btn {
-    display: none;
+@media screen and (max-width: 768px) {
+  .nav__toggler {
+    display: block;
+    cursor: pointer;
+  }
+  .nav__menu {
+    position: fixed;
+    top: 7vh;
+    right: 0;
+    height: 93vh;
+    width: 40vw;
+    background: rgb(255, 255, 255);
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: 0.5s ease-in;
+    justify-content: space-evenly;
   }
 
-  .main-navigation__header-nav {
-    display: block;
+  /* Seting the elements alignment to center in the mobile view */
+  .nav__menu a {
+    margin-right: 3.5rem;
   }
+}
+/* Active Class */
+.nav__active {
+  transform: translateX(0%);
+}
+
+/* Toggle Icon Animation */
+
+.toggle .line1 {
+  transform: rotate(-45deg) translate(-4px, 5px);
+}
+.toggle .line2 {
+  opacity: 0;
+}
+.toggle .line3 {
+  transform: rotate(45deg) translate(-4px, -5px);
+}
+
+.navMenu a {
+  color: #000000;
+  text-decoration: none;
+  font-size: 1.3em;
+  text-transform: captilalize;
+  font-weight: 600;
+  display: inline-block;
+  padding: 30px;
+  transition: all 0.2s ease-in-out;
+}
+
+
+
+.nav .dot {
+  width: 10px;
+  height: 3.5px;
+  background: #3EC9B4;
+  border-radius: 50%;
+  opacity: 1;
+  margin-top: 30px;
+  transform: translateX(67px);
+  transition: all 0.2s ease-in-out;
+}
+
+.nav a:nth-child(1):hover~.dot,
+.navMenu:not(:hover) a:nth-child(1).active~.dot {
+  transform: translateX(145px);
+}
+
+.nav a:nth-child(2):hover~.dot,
+.navMenu:not(:hover) a:nth-child(2).active~.dot {
+  transform: translateX(280px);
+}
+
+.nav a:nth-child(3):hover~.dot,
+.navMenu:not(:hover) a:nth-child(3).active~.dot {
+  transform: translateX(415px);
+}
+
+.nav a:nth-child(4):hover~.dot,
+.navMenu:not(:hover) a:nth-child(4).active~.dot {
+  transform: translateX(550px);
 }

@@ -10,7 +10,7 @@ import {
 } from "../shared/utils/validators";
 
 import "./Login.css";
-import LoginImg from "../Source/LoginImg.jpg";
+import LoginImg from "../assets/LoginImg.jpg";
 
 const Login = () => {
   const [formState, inputHandler] = useForm(

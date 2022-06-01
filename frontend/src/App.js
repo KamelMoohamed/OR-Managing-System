@@ -12,17 +12,17 @@ import Footer from "./shared/Footer/Footer";
 function App() {
   return (
     <Router>
-      <MainNavigation />
+      <MainNavigation/>
       <main>
         <Routes>
-          <Route path="/" element={<Home />} exact></Route>
-          <Route path="/login" element={<Login />} exact></Route>
-          <Route path="/about" element={<About />} exact></Route>
-          <Route path="/about-us" element={<AboutUS />} exact></Route>
-          <Route path="/staff" element={<Staff />} exact></Route>
+          <Route path="/" element={<Home/>} exact></Route>
+          <Route path="/login" element={<Login/>} exact></Route>
+          <Route path="/about" element={<About/>} exact></Route>
+          <Route path="/about-us" element={<AboutUS/>} exact></Route>
+          <Route path="/staff" element={<Staff/>} exact></Route>
         </Routes>
       </main>
-      <Footer />
+      {/*<Footer />*/}
     </Router>
   );
 }

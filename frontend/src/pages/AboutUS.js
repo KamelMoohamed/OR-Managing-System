@@ -1,6 +1,6 @@
 import React from "react";
 import PersonCard from "../components/PersonCard";
-import Image from "../Source/test.jpg";
+import Image from "../assets/test.jpg";
 
 const AboutUS = () => {
   const person = {

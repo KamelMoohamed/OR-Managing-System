@@ -1,52 +1,79 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-
-import MainHeader from "./MainHeader";
-import NavLinks from "./NavLinks";
-import SideDrawer from "./SideDrawer";
-import Backdrop from "../UIElements/Backdrop";
 import "./MainNavigation.css";
+import Button from "../FormElements/Button";
+import logo from '../../assets/navlogo.png'
 
-const MainNavigation = (props) => {
-  const [drawerIsOpen, setDrawerIsOpen] = useState(false);
+function Navbar() {
+  const [active, setActive] = useState("nav__menu");
+  const [icon, setIcon] = useState("nav__toggler");
+  const [activeBar, setActiveBar] = useState('nav__link')
 
-  const openDrawerHandler = () => {
-    setDrawerIsOpen(true);
+  const navToggle = () => {
+    if (active === "nav__menu") {
+      setActive("nav__menu nav__active");
+    } else setActive("nav__menu");
+
+    // Icon Toggler
+    if (icon === "nav__toggler") {
+      setIcon("nav__toggler toggle");
+    } else setIcon("nav__toggler");
   };
 
-  const closeDrawerHandler = () => {
-    setDrawerIsOpen(false);
-  };
+  const activeTabBarChange = __ =>{
+
+  }
 
   return (
-    <React.Fragment>
-      {drawerIsOpen && <Backdrop onClick={closeDrawerHandler} />}
-      {drawerIsOpen && (
-        <SideDrawer show={drawerIsOpen} onClick={closeDrawerHandler}>
-          <nav className="main-navigation__drawer-nav">
-            <NavLinks />
-          </nav>
-        </SideDrawer>
-      )}
+      <nav className="nav">
 
-      <MainHeader>
-        <button
-          className="main-navigation__menu-btn"
-          onClick={openDrawerHandler}
-        >
-          <span />
-          <span />
-          <span />
-        </button>
-        <h1 className="main-navigation__title">
-          <Link to="/">CuOR</Link>
-        </h1>
-        <nav className="main-navigation__header-nav">
-          <NavLinks />
-        </nav>
-      </MainHeader>
-    </React.Fragment>
+        <a href='/'>
+          <img className='logo' src={logo} alt={'logo'}/>
+        </a>
+
+        <ul className={active}>
+          <div className="dot"></div>
+          <li className="nav__ite">
+            <a href="/" className={activeBar} onClick={activeTabBarChange}>
+              Home
+            </a>
+          </li>
+          <li className="nav__item">
+            <a href="/about" className="nav__link">
+              About
+            </a>
+          </li>
+          <li className="nav__item">
+            <a href="/staff" className="nav__link">
+              Staff
+            </a>
+          </li>
+          <li className="nav__item">
+            <a href="#" className="nav__link">
+              Contact Us
+            </a>
+          </li>
+          <li className="nav__item">
+            <a href="/login" className="nav__link">
+             Sign in
+            </a>
+          </li>
+
+          <li>
+            <a>
+              <Button>
+                <span>Sign Up</span>
+              </Button>
+            </a>
+          </li>
+
+        </ul>
+          <div onClick={navToggle} className={icon}>
+          <div className="line1"></div>
+          <div className="line2"></div>
+          <div className="line3"></div>
+        </div>
+      </nav>
   );
-};
+}
 
-export default MainNavigation;
+export default Navbar;
