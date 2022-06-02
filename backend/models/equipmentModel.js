@@ -136,6 +136,20 @@ equipmentSchema.pre("findOneAndUpdate", async function (next) {
   );
   next();
 });
-
+equipmentSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "room",
+    select: "RID",
+  })
+    .populate({
+      path: "previousRoom",
+      select: "RID",
+    })
+    .populate({
+      path: "schedule.operation",
+      select: "id",
+    });
+  next();
+});
 const Equipment = mongoose.model("Equipment", equipmentSchema);
 module.exports = Equipment;

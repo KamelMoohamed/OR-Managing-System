@@ -205,20 +205,25 @@ operationSchema.pre("findOneAndDelete", async function (next) {
 //Populating from other documents
 operationSchema.pre(/^find/, function (next) {
   this.populate({
+    // path: "rooms.room",
     path: "rooms",
-    select: "-__v -_id -operations",
+    select: "RID",
   })
     .populate({
-      path: "equipments",
-      select: "-__v -_id -operations",
+      path: "equipments.equip",
+      select: "EID name",
     })
     .populate({
       path: "staff",
-      select: "fName lName role phone ",
+      select: "name role SSN",
     })
     .populate({
       path: "patient",
-      select: "-__v ",
+      select: "name SSN",
+    })
+    .populate({
+      path: "supplies.id",
+      select: "SID name",
     });
   next();
 });

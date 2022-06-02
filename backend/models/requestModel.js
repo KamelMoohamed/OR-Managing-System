@@ -6,7 +6,7 @@ const requestSchema = new mongoose.Schema({
   name: { type: String, required: [true, "the operation needs a name"] },
   doctor: {
     type: mongoose.Schema.ObjectId,
-    req: "User",
+    ref: "User",
   },
   duration: [
     {
@@ -36,7 +36,7 @@ const requestSchema = new mongoose.Schema({
     required: [true, "Please Mention nurse for this request"],
     validate: [
       async function (nurseSSN) {
-        nurse = await User.findOne({ SSN: nurseSSN });
+        nurse = await User.findOne({ SSN: nurseSSN, role: "lead-nurse" });
         if (nurse) return true;
         return false;
       },
@@ -55,6 +55,13 @@ const requestSchema = new mongoose.Schema({
     enum: ["Approved", "Admin Pending", "Nurse Pending"],
     default: "Nurse Pending",
   },
+});
+requestSchema.pre(/^find/, async function (next) {
+  this.populate({
+    path: "doctor",
+    select: "name SSN",
+  });
+  next();
 });
 
 requestSchema.pre("findOneAndUpdate", () => {

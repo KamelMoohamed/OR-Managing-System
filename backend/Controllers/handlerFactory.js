@@ -6,7 +6,7 @@ exports.CreateOne = (Model) =>
   CatchAsync(async (req, res, next) => {
     const newDoc = await Model.create(req.body);
     if (Model === Request) {
-      newDoc.doctor = req.user._id;
+      newDoc.doctor = req.user;
       await newDoc.save();
     }
     res.status(201).json({
