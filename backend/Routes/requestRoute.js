@@ -6,7 +6,11 @@ const router = express.Router();
 
 router
   .route("/")
-  .get(requestController.getAllRequests)
+  .get(
+    authController.protect,
+    authController.restrictTo("ORadmin"),
+    requestController.getAllRequests
+  )
   .post(
     authController.protect,
     authController.restrictTo("lead-doctor"),

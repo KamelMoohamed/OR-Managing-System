@@ -30,6 +30,8 @@ router
     authController.restrictTo("ORadmin"),
     userController.availableDoctor
   );
+router.patch("/updateMe", authController.protect, userController.updateMe);
+
 router
   .route("/")
   .post(
@@ -49,7 +51,6 @@ router
     authController.protect,
     authController.restrictTo("admin"),
     userController.updateUser
-  )
-  .patch(authController.protect, userController.updateMe);
+  );
 
 module.exports = router;

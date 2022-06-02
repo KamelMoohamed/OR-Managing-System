@@ -6,20 +6,24 @@ const Operation = require("./../models/operationModel");
 const Request = require("./../models/requestModel");
 const mongoose = require("mongoose");
 
+const filterObj = (obj, ...allowedFields) => {
+  const newObj = {};
+  Object.keys(obj).forEach((el) => {
+    if (allowedFields.includes(el)) newObj[el] = obj[el];
+  });
+  return newObj;
+};
 exports.updateMe = CatchAsync(async (req, res, next) => {
-  const user = await User.findByIdAndUpdate(req.params.id, req.body, {
+  const filteredBody = filterObj(req.body, "name", "email", "phone");
+  const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
     new: true,
     runValidators: true,
   });
 
-  if (!user) {
-    return next(new AppError("No User with that id", 404));
-  }
-
   res.status(200).json({
     status: "success",
     data: {
-      user,
+      user: updatedUser,
     },
   });
 });

@@ -16,12 +16,6 @@ const roomSchema = new mongoose.Schema(
       type: Number,
       default: 1,
     },
-    operations: [
-      {
-        type: mongoose.Schema.ObjectId,
-        ref: "Operation",
-      },
-    ],
     equipments: [
       {
         type: mongoose.Schema.ObjectId,
@@ -49,17 +43,9 @@ const roomSchema = new mongoose.Schema(
 
 roomSchema.pre(/^find/, function (next) {
   this.populate({
-    // ***********selection for this populating is not working**************
-    path: "operations",
-    select: "reservationTime ",
-  }).populate({
     path: "equipments",
     select: "EID name",
   });
-  // .populate({
-  //   path: "schedule.operation",
-  //   select: "name",
-  // });
   next();
 });
 
