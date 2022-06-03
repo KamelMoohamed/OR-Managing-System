@@ -4,7 +4,7 @@ exports.sendMail = (options) => {
     service: "gmail",
     auth: {
       user: "orsystem8@gmail.com",
-      pass: "aA01009316621",
+      pass: process.env.EMAIL_PASSWORD,
     },
   });
 

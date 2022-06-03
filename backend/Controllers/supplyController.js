@@ -23,7 +23,15 @@ exports.checkSupplies = async () => {
   const use = await suppliesHandler.checkSupply(totalSupplies);
   if (!use) console.log("Something Wrong Happened");
 };
-
+exports.addSupplies = CatchAsync(async (req, res, next) => {
+  const supplies = req.body;
+  const flag = await suppliesHandler.addSupply(supplies);
+  if (!flag) return next(new AppError("there is no supply with that id", 400));
+  res.status(200).json({
+    status: "success",
+    message: "Supplies Added successfully",
+  });
+});
 exports.getInNeed = CatchAsync(async (req, res, next) => {
   const docs = await Supply.find({ inNeed: true });
   res.status(200).json({

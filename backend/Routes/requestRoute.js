@@ -8,7 +8,7 @@ router
   .route("/")
   .get(
     authController.protect,
-    authController.restrictTo("ORadmin"),
+    authController.restrictTo("admin", "ORadmin"),
     requestController.getAllRequests
   )
   .post(
@@ -20,12 +20,12 @@ router
   .route("/:id")
   .get(
     authController.protect,
-    authController.restrictTo("ORadmin"),
+    authController.restrictTo("ORadmin", "admin"),
     requestController.getRequest
   )
   .patch(
     authController.protect,
-    authController.restrictTo("ORadmin"),
+    authController.restrictTo("admin"),
     requestController.updateRequest
   );
 module.exports = router;

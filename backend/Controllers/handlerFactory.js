@@ -69,8 +69,7 @@ exports.getAll = (Model) =>
   CatchAsync(async (req, res, next) => {
     let filter = {};
     if (req.body) {
-      if (req.body.role === "officer") filter = { status: "open" };
-      else if (req.body.role === "ORadmin") filter = { status: "To admin" };
+      if (req.body.role === "ORadmin") filter = { status: "To admin" };
     }
 
     const features = new APIFeatures(Model.find(filter), req.query)

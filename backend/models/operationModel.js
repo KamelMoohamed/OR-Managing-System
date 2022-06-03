@@ -11,10 +11,12 @@ const operationSchema = new mongoose.Schema(
     type: {
       type: String,
       enum: ["Emergency", "Outpatient"],
+      required: true,
     },
-    depart: {
+    details: String,
+    department: {
       type: String,
-      enum: ["cardio", "Gastroenterology", "Neurology"],
+      enum: ["Cardiology", "Gastroenterology", "Neurology"],
     },
     staff: [
       {
@@ -36,7 +38,7 @@ const operationSchema = new mongoose.Schema(
         },
         end: {
           type: Date,
-          required: [true, "please mention the start time "],
+          required: [true, "please mention the end time "],
         },
       },
     ],
@@ -52,7 +54,7 @@ const operationSchema = new mongoose.Schema(
         },
         end: {
           type: Date,
-          required: [true, "please mention the start time "],
+          required: [true, "please mention the end time "],
         },
       },
     ],
@@ -76,15 +78,15 @@ const operationSchema = new mongoose.Schema(
       },
     ],
 
-    price: Number,
+    cost: Number,
     reservationTime: {
       type: Date,
       default: Date.now(),
     },
     OperationStatus: {
       type: String,
-      enum: ["On Schedule", "Done", "Canceled", "Postponed"],
-      default: "On Schedule",
+      enum: ["On Schedule", "Done", "Canceled", "Postponed", "Pending"],
+      default: "Pending",
     },
     patientAcceptance: {
       type: String,
@@ -191,6 +193,7 @@ operationSchema.pre("save", async function (next) {
     this.doctorAcceptance === "Accept" &&
     this.patientAcceptance === "Accept"
   ) {
+    this.OperationStatus = "On Schedule";
     if (
       !(
         this.isModified("doctorAcceptance") ||
@@ -198,6 +201,7 @@ operationSchema.pre("save", async function (next) {
       )
     )
       return next();
+
     for (element of this.rooms) {
       await Scheduling.addRoomSchedule(this, Room, element);
     }

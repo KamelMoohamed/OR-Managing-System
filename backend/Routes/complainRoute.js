@@ -9,7 +9,7 @@ router
   .post(complainController.createComplain)
   .get(
     authController.protect,
-    authController.restrictTo("admin", "ORadmin", "officer"),
+    authController.restrictTo("admin", "ORadmin"),
     complainController.setRole,
     complainController.getAllComplain
   );
@@ -18,12 +18,12 @@ router
   .route("/:id")
   .get(
     authController.protect,
-    authController.restrictTo("admin", "ORadmin", "officer"),
+    authController.restrictTo("admin", "ORadmin"),
     complainController.getComplain
   )
   .patch(
     authController.protect,
-    authController.restrictTo("admin", "ORadmin", "officer"),
+    authController.restrictTo("admin", "ORadmin"),
     complainController.replayComplain
   )
   .delete(
@@ -36,7 +36,7 @@ router
   .route("/:id/forward")
   .patch(
     authController.protect,
-    authController.restrictTo("admin", "officer"),
+    authController.restrictTo("admin"),
     complainController.adminForward
   );
 

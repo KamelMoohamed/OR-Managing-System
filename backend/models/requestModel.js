@@ -1,9 +1,11 @@
 const mongoose = require("mongoose");
 const User = require("./userModel");
-const validator = require("validator");
 
 const requestSchema = new mongoose.Schema({
-  name: { type: String, required: [true, "the operation needs a name"] },
+  department: {
+    type: String,
+    required: [true, "please mention the depratment name "],
+  },
   doctor: {
     type: mongoose.Schema.ObjectId,
     ref: "User",
@@ -23,7 +25,7 @@ const requestSchema = new mongoose.Schema({
         if (patient) return true;
         return false;
       },
-      "No patient found with this SSN",
+      "No user found with this SSN",
     ],
   },
   paymentMethod: {
@@ -59,6 +61,9 @@ const requestSchema = new mongoose.Schema({
 requestSchema.pre(/^find/, async function (next) {
   this.populate({
     path: "doctor",
+    select: "name SSN",
+  }).populate({
+    path: "nurseSSN",
     select: "name SSN",
   });
   next();

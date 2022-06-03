@@ -1,4 +1,3 @@
-const req = require("express/lib/request");
 const mongoose = require("mongoose");
 const validator = require("validator");
 
@@ -11,6 +10,7 @@ const complainSchema = new mongoose.Schema({
     type: String,
     required: [true, "please provide us a working email to contact you back"],
     validate: [validator.isEmail, "Please write a correct email"],
+    lowercase: true,
   },
   phone: String,
   complainText: {

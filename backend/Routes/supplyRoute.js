@@ -1,7 +1,6 @@
 const express = require("express");
 const authController = require("./../Controllers/authController");
 const supplyController = require("./../Controllers/supplyController");
-const orAdminController = require("./../Controllers/orAdminController");
 
 const router = express.Router();
 
@@ -9,12 +8,12 @@ router
   .route("/")
   .post(
     authController.protect,
-    authController.restrictTo("officer", "admin", "ORadmin"),
+    authController.restrictTo("admin", "ORadmin"),
     supplyController.createSupply
   )
   .get(
     authController.protect,
-    authController.restrictTo("officer", "admin", "ORadmin"),
+    authController.restrictTo("admin", "ORadmin"),
     supplyController.getAllSupply
   );
 
@@ -23,7 +22,7 @@ router
   .patch(
     authController.protect,
     authController.restrictTo("ORadmin", "admin"),
-    orAdminController.addSupplies
+    supplyController.addSupplies
   );
 router
   .route("/needed")
@@ -45,17 +44,17 @@ router
   .route("/:id")
   .get(
     authController.protect,
-    authController.restrictTo("officer", "admin", "ORadmin"),
+    authController.restrictTo("admin", "ORadmin"),
     supplyController.getSupply
   )
   .delete(
     authController.protect,
-    authController.restrictTo("officer", "admin"),
+    authController.restrictTo("admin"),
     supplyController.deleteSupply
   )
   .patch(
     authController.protect,
-    authController.restrictTo("officer", "admin"),
+    authController.restrictTo("admin"),
     supplyController.updateSupply
   );
 

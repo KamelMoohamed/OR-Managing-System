@@ -27,11 +27,9 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: [
         "lead-doctor",
-        "doctor-training",
-        "doctor-Assistant",
+        "doctor",
         "lead-nurse",
         "nurse",
-        "officer",
         "patient",
         "admin",
         "ORadmin",
@@ -44,12 +42,10 @@ const userSchema = new mongoose.Schema(
     },
     phone: [
       {
-        type: Number,
+        type: String,
       },
     ],
-    address: {
-      type: String,
-    },
+    address: String,
     password: {
       type: String,
       required: [true, "please insert a password"],
@@ -67,7 +63,10 @@ const userSchema = new mongoose.Schema(
       enum: ["female", "male"],
       required: true,
     },
-    birthDate: Date,
+    birthDate: {
+      type: Date,
+      required: true,
+    },
     schedule: [
       {
         operation: {
@@ -78,16 +77,13 @@ const userSchema = new mongoose.Schema(
         end: Date,
       },
     ],
-
-    Scans: [{ type: String }],
-    History: String,
     worksSince: Date,
     emergencyday: {
       type: Number,
       min: 0,
       max: 6,
     },
-    type: {
+    department: {
       type: String,
       enum: [
         "Anesthesiologist",
@@ -96,23 +92,23 @@ const userSchema = new mongoose.Schema(
         "Neurologist",
       ],
     },
-
-    dependent: [
+    medicalRecord: [
       {
-        SSN: {
+        type: {
           type: String,
-          unique: true,
+          enum: [
+            "Blood Pressure",
+            "Cholestrol Level",
+            "Glucose Level",
+            "Scan",
+            "Allergy",
+            "History",
+          ],
           required: true,
         },
-        name: {
-          type: String,
-          required: true,
-        },
-        birthDate: Date,
-        gender: {
-          type: String,
-          enum: ["female", "male"],
-        },
+        details: String,
+        value: String,
+        scanImg: String,
       },
     ],
   },

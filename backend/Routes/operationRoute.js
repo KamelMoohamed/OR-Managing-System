@@ -8,12 +8,12 @@ router
   .route("/")
   .get(
     authController.protect,
-    authController.restrictTo("officer", "admin", "ORadmin"),
+    authController.restrictTo("admin", "ORadmin"),
     operationController.getAllOperations
   )
   .post(
     authController.protect,
-    authController.restrictTo("officer", "admin", "ORadmin"),
+    authController.restrictTo("admin", "ORadmin"),
     operationController.createOperation
   );
 router
@@ -21,12 +21,12 @@ router
   .get(authController.protect, operationController.getOperation)
   .delete(
     authController.protect,
-    authController.restrictTo("officer", "lead-doctor", "admin", "ORadmin"),
+    authController.restrictTo("admin", "ORadmin"),
     operationController.deleteOperation
   )
   .patch(
     authController.protect,
-    authController.restrictTo("officer", "lead-doctor", "admin", "ORadmin"),
+    authController.restrictTo("admin", "ORadmin"),
     operationController.updateOperation
   );
 

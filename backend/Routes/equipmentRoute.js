@@ -8,25 +8,33 @@ router
   .route("/")
   .post(
     authController.protect,
-    authController.restrictTo("officer", "ORadmin"),
+    authController.restrictTo("ORadmin", "admin"),
     equipmentController.createEquipment
+  );
+
+router
+  .route("/available-equipment")
+  .get(
+    authController.protect,
+    authController.restrictTo("ORadmin"),
+    equipmentController.getAvailableEquip
   );
 
 router
   .route("/:id")
   .get(
     authController.protect,
-    authController.restrictTo("officer", "ORadmin"),
+    authController.restrictTo("admin", "ORadmin"),
     equipmentController.getEquipment
   )
   .delete(
     authController.protect,
-    authController.restrictTo("officer", "ORadmin"),
+    authController.restrictTo("admin"),
     equipmentController.deleteEquipment
   )
   .patch(
     authController.protect,
-    authController.restrictTo("officer", "ORadmin"),
+    authController.restrictTo("admin", "ORadmin"),
     equipmentController.updateEquipment
   );
 
@@ -34,7 +42,7 @@ router
   .route("/add_checkup/:id")
   .post(
     authController.protect,
-    authController.restrictTo("officer", "ORadmin"),
+    authController.restrictTo("ORadmin"),
     equipmentController.addCheckup
   );
 
@@ -42,7 +50,7 @@ router
   .route("/need_calibration/:id")
   .patch(
     authController.protect,
-    authController.restrictTo("officer", "ORadmin"),
+    authController.restrictTo("ORadmin"),
     equipmentController.needCalibtation
   );
 

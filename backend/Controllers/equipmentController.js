@@ -3,7 +3,7 @@ const Equipment = require("./../models/equipmentModel");
 const CatchAsync = require("../utils/CatchAsync");
 const AppError = require("../utils/appError");
 
-const addCheckup = CatchAsync(async (req, res, next) => {
+exports.addCheckup = CatchAsync(async (req, res, next) => {
   const checkup = req.body;
   var equip = await Equipment.findByIdAndUpdate(req.params.id, {
     $push: {
@@ -16,7 +16,7 @@ const addCheckup = CatchAsync(async (req, res, next) => {
   });
 });
 
-const needCalibtation = CatchAsync(async (req, res, next) => {
+exports.needCalibtation = CatchAsync(async (req, res, next) => {
   const equipment = await Equipment.findByIdAndUpdate(req.params.id, {
     valid: false,
   });
@@ -31,9 +31,18 @@ const needCalibtation = CatchAsync(async (req, res, next) => {
   });
 });
 
-exports.getAvailableEquip = async (start, end, name, next) => {
-  const equips = await Equipment.find({ name: name });
-
+exports.getAvailableEquip = CatchAsync(async (req, res, next) => {
+  const equips = await Equipment.find({ name: req.query.name });
+  if (!equips) return next(new AppError("No Equipment with this name", 400));
+  const start = req.query.start;
+  const end = req.query.end;
+  if (!start || !end)
+    return next(
+      new AppError(
+        "pleeas mention the end and start of the duration intervel",
+        400
+      )
+    );
   let num = 0;
   equips.forEach((element) => {
     for (var i = element.schedule.length - 1; i >= 0; i--)
@@ -48,11 +57,13 @@ exports.getAvailableEquip = async (start, end, name, next) => {
     return next(
       new AppError(`there is no available ${name} for this time`, 500)
     );
-};
+  res.status(200).json({
+    status: "success",
+    equipments: "Check up added successfully",
+  });
+});
 
 exports.getEquipment = handlerFactory.getOne(Equipment);
 exports.createEquipment = handlerFactory.CreateOne(Equipment);
 exports.updateEquipment = handlerFactory.updateOne(Equipment);
 exports.deleteEquipment = handlerFactory.deleteOne(Equipment);
-exports.addCheckup = addCheckup;
-exports.needCalibtation = needCalibtation;

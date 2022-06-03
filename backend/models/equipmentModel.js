@@ -14,7 +14,7 @@ const equipmentSchema = new mongoose.Schema(
       required: [true, "Please include the equipment name"],
       trim: true,
     },
-    factory: String,
+    manufacturer: String,
     type: {
       type: String,
       enum: ["Static", "Dynamic"],

@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const operationSchema = require("./operationModel");
 const roomSchema = new mongoose.Schema(
   {
     RID: {
