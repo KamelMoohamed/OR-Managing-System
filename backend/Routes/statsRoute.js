@@ -47,4 +47,12 @@ router
     authController.restrictTo("ORadmin"),
     statsController.RoomsHours
   );
+
+router
+  .route("/used-supplies")
+  .get(
+    authController.protect,
+    authController.restrictTo("ORadmin"),
+    statsController.mostSupplies
+  );
 module.exports = router;

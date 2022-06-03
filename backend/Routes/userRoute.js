@@ -31,7 +31,15 @@ router
     userController.availableDoctor
   );
 router.patch("/updateMe", authController.protect, userController.updateMe);
+router.get("/me", authController.protect, userController.getMe);
 
+router
+  .route("/is-available/:id")
+  .get(
+    authController.protect,
+    authController.restrictTo("ORadmin"),
+    userController.isAvailable
+  );
 router
   .route("/")
   .post(

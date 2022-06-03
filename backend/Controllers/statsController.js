@@ -2,8 +2,7 @@ const CatchAsync = require("./../utils/CatchAsync");
 const User = require("./../models/userModel");
 const Operation = require("./../models/operationModel");
 const Room = require("./../models/roomModel");
-const roomController = require("./../Controllers/roomController");
-
+const Supply = require("./../models/supplyModel");
 const staffNumber = CatchAsync(async (req, res, next) => {
   let groupby = {};
   if (req.body.groupby) {
@@ -66,7 +65,7 @@ const staffWorkingHours = CatchAsync(async (req, res, next) => {
     {
       $group: {
         _id: "$_id",
-        Name: { $first: "$Name" },
+        Name: { $first: "$name" },
         total: {
           $sum: "$totalHours",
         },
@@ -148,8 +147,6 @@ exports.busyRooms = CatchAsync(async (req, res, next) => {
         busyRooms.push(element);
       }
   });
-  console.log(busyRooms);
-  console.log(busyRooms.length - 1);
   res.status(200).json({
     busyRooms: busyRooms.length - 1,
     emptyRooms: all.length - (busyRooms.length - 1),
@@ -198,6 +195,55 @@ exports.RoomsHours = CatchAsync(async (req, res, next) => {
         },
       },
     },
+  ]);
+  res.status(200).json({
+    data,
+  });
+});
+
+exports.mostSupplies = CatchAsync(async (req, res, next) => {
+  let start = {};
+  if (req.body.start) {
+    start["$gte"] = new Date(req.body.start);
+  }
+  if (req.body.end) {
+    start["$lte"] = new Date(req.body.end);
+  }
+  const data = await Operation.aggregate([
+    {
+      $match: {
+        rooms: {
+          $elemMatch: {
+            start,
+          },
+        },
+      },
+    },
+    {
+      $unwind: "$supplies",
+    },
+    {
+      $group: {
+        _id: "$supplies.id",
+        total: { $sum: "$supplies.quantity" },
+      },
+    },
+    {
+      $lookup: {
+        from: "supplies",
+        localField: "_id",
+        foreignField: "_id",
+        as: "supply",
+      },
+    },
+    {
+      $replaceRoot: {
+        newRoot: {
+          $mergeObjects: [{ $arrayElemAt: ["$supply", 0] }, "$$ROOT"],
+        },
+      },
+    },
+    { $project: { supply: 0, quantity: 0, __v: 0, inNeed: 0, needed: 0 } },
   ]);
   res.status(200).json({
     data,

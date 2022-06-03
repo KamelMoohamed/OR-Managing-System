@@ -5,6 +5,7 @@ const AppError = require("../utils/appError");
 const Operation = require("./../models/operationModel");
 const Request = require("./../models/requestModel");
 const mongoose = require("mongoose");
+const Scheduling = require("./../utils/Scheduling");
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
@@ -145,6 +146,26 @@ exports.userInBody = (req, res, next) => {
   next();
 };
 
+exports.isAvailable = CatchAsync(async (req, res, next) => {
+  const userId = req.params.id;
+  let doc = {};
+  if (req.body.start && req.body.end) {
+    doc.start = new Date(req.body.start);
+    doc.end = new Date(req.body.end);
+  } else return next(new AppError("please provide start and end dates", 400));
+  await Scheduling.checkUserSchedule(doc, User, userId, next);
+  res.status(200).json({
+    status: "success",
+    message: `user with id ${userId} is avaliable at this time`,
+  });
+});
+
+exports.getMe = CatchAsync(async (req, res, next) => {
+  res.status(200).json({
+    status: "success",
+    user: req.user,
+  });
+});
 exports.createUser = handlerFactory.CreateOne(User);
 exports.getUser = handlerFactory.getOne(User);
 exports.deleteUser = handlerFactory.deleteOne(User);
