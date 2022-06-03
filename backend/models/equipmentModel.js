@@ -15,6 +15,8 @@ const equipmentSchema = new mongoose.Schema(
       trim: true,
     },
     manufacturer: String,
+    manufacturingDate: Date,
+    installingDate: Date,
     type: {
       type: String,
       enum: ["Static", "Dynamic"],
@@ -86,13 +88,11 @@ equipmentSchema.pre("save", async function (next) {
     this.room,
     {
       $push: {
-        equipments: {
-          equipment: this.id,
-        },
+        equipments: this.id,
       },
     },
     (err) => {
-      return next(new AppError("there is no room with this Id", 400));
+      return next(new AppError("there is no room with this ID", 400));
     }
   );
 });
