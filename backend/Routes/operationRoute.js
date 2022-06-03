@@ -30,4 +30,19 @@ router
     operationController.updateOperation
   );
 
+router
+  .route("/:id/:reply")
+  .patch(
+    authController.protect,
+    authController.restrictTo("lead-doctor", "patient"),
+    operationController.replyOperation
+  );
+router
+  .route("/:id/finish")
+  .patch(
+    authController.protect,
+    authController.restrictTo("lead-nurse"),
+    operationController.finishOperation
+  );
+
 module.exports = router;
