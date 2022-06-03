@@ -86,6 +86,22 @@ const operationSchema = new mongoose.Schema(
       enum: ["On Schedule", "Done", "Canceled", "Postponed"],
       default: "On Schedule",
     },
+    patientAcceptance: {
+      type: String,
+      enum: ["Pending", "Accept", "Refuse"],
+      default: "Pending",
+    },
+    doctorAcceptance: {
+      type: String,
+      enum: ["Pending", "Accept", "Refuse"],
+      default: "Pending",
+    },
+    mainDoctor: {
+      //same doctor sending the request
+      type: mongoose.Schema.ObjectId,
+      ref: "User",
+      required: true,
+    },
   },
 
   {
@@ -113,6 +129,7 @@ operationSchema.virtual("end").get(function () {
 operationSchema.post("findOneAndUpdate", async function () {
   const { _id } = this.getQuery();
   const doc = await Operation.findById(_id);
+
   const removedRooms = Scheduling.checkRoomChange(req.rooms, doc.rooms);
   if (removedRooms) {
     for (element of removedRooms) {
@@ -170,19 +187,31 @@ operationSchema.pre("save", async function (next) {
 
 // adding Schedule to staff, rooms, and patient before creating the operation
 operationSchema.pre("save", async function (next) {
-  if (!this.isNew) return next();
-  for (element of this.rooms) {
-    await Scheduling.addRoomSchedule(this, Room, element);
-  }
-  for (element of this.equipments) {
-    await Scheduling.addRoomSchedule(this, Equipment, element);
-  }
-  await Scheduling.addUserSchedule(this, User, this.patient);
-  for (element of this.staff) {
-    await Scheduling.addUserSchedule(this, User, element);
-  }
+  if (
+    this.doctorAcceptance === "Accept" &&
+    this.patientAcceptance === "Accept"
+  ) {
+    if (
+      !(
+        this.isModified("doctorAcceptance") ||
+        this.isModified("patientAcceptance")
+      )
+    )
+      return next();
+    for (element of this.rooms) {
+      await Scheduling.addRoomSchedule(this, Room, element);
+    }
+    for (element of this.equipments) {
+      await Scheduling.addRoomSchedule(this, Equipment, element);
+    }
+    await Scheduling.addUserSchedule(this, User, this.patient);
+    await Scheduling.addUserSchedule(this, User, this.mainDoctor);
+    for (element of this.staff) {
+      await Scheduling.addUserSchedule(this, User, element);
+    }
 
-  next();
+    next();
+  } else next();
 });
 
 // deleting the schedule from staff, rooms, and patient before deleting operation

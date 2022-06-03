@@ -48,6 +48,52 @@ exports.finishOperation = CatchAsync(async (req, res, next) => {
     docs,
   });
 });
+
+exports.replyOperation = CatchAsync(async (req, res, next) => {
+  reply = req.params.reply;
+  if (reply !== "Refuse" && reply !== "Accept")
+    return next(new AppError("This not a valid reply", 400));
+
+  if (req.user.role === "lead-doctor") {
+    const op = await Operation.findOne({
+      id: req.params.id,
+      mainDoctor: req.user,
+      doctorAcceptance: "Pending",
+    });
+    if (!op)
+      return next(
+        new AppError(
+          `No pending operation with this id is associated with this ${req.user.role}`,
+          404
+        )
+      );
+    else {
+      op.doctorAcceptance = reply;
+      await op.save();
+    }
+  } else if (req.user.role === "patient") {
+    const op = await Operation.findOne({
+      id: req.params.id,
+      patient: req.user,
+      patientAcceptance: "Pending",
+    });
+    if (!op)
+      return next(
+        new AppError(
+          `No pending operation with this id is associated with this ${req.user.role}`,
+          404
+        )
+      );
+    else {
+      op.patientAcceptance = reply;
+      await op.save();
+    }
+  }
+  res.status(200).json({
+    status: "success",
+    Message: " Your reply has been recorded",
+  });
+});
 exports.createOperation = handlerFactory.CreateOne(Operation);
 exports.getOperation = handlerFactory.getOne(Operation);
 exports.updateOperation = updateOperation;
