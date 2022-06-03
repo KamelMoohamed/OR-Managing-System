@@ -33,6 +33,12 @@ const createSendToken = (user, statusCode, res) => {
   });
 };
 
+exports.signup = CatchAsync(async (req, res, next) => {
+  const newUser = await User.create(req.body);
+
+  createSendToken(newUser, 201, res);
+});
+
 exports.login = CatchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -41,6 +47,7 @@ exports.login = CatchAsync(async (req, res, next) => {
   }
 
   const user = await User.findOne({ email: email }).select("+password");
+  if (!user) return next(new appError("incorrect email or password", 400));
   const correct = await user.correctPassword(password, user.password);
 
   if (!user || !correct) {

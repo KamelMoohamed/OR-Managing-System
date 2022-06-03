@@ -8,12 +8,12 @@ router
   .route("/")
   .get(
     authController.protect,
-    authController.restrictTo("officer", "admin"),
+    authController.restrictTo("admin", "ORadmin"),
     operationController.getAllOperations
   )
   .post(
     authController.protect,
-    authController.restrictTo("officer", "admin"),
+    authController.restrictTo("admin", "ORadmin"),
     operationController.createOperation
   );
 router
@@ -21,13 +21,28 @@ router
   .get(authController.protect, operationController.getOperation)
   .delete(
     authController.protect,
-    authController.restrictTo("officer", "lead-doctor", "admin"),
+    authController.restrictTo("admin", "ORadmin"),
     operationController.deleteOperation
   )
   .patch(
     authController.protect,
-    authController.restrictTo("officer", "lead-doctor", "admin"),
+    authController.restrictTo("admin", "ORadmin"),
     operationController.updateOperation
+  );
+
+router
+  .route("/:id/:reply")
+  .patch(
+    authController.protect,
+    authController.restrictTo("lead-doctor", "patient"),
+    operationController.replyOperation
+  );
+router
+  .route("/:id/finish")
+  .patch(
+    authController.protect,
+    authController.restrictTo("lead-nurse"),
+    operationController.finishOperation
   );
 
 module.exports = router;

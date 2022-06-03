@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const operationSchema = require("./operationModel");
 const roomSchema = new mongoose.Schema(
   {
     RID: {
@@ -16,18 +15,10 @@ const roomSchema = new mongoose.Schema(
       type: Number,
       default: 1,
     },
-    operations: [
-      {
-        type: mongoose.Schema.ObjectId,
-        ref: "Operation",
-      },
-    ],
     equipments: [
       {
-        equipment: {
-          type: mongoose.Schema.ObjectId,
-          ref: "Equipment",
-        },
+        type: mongoose.Schema.ObjectId,
+        ref: "Equipment",
       },
     ],
     valid: Boolean,
@@ -51,8 +42,8 @@ const roomSchema = new mongoose.Schema(
 
 roomSchema.pre(/^find/, function (next) {
   this.populate({
-    path: "operations",
-    select: "_id staff ",
+    path: "equipments",
+    select: "EID name",
   });
   next();
 });

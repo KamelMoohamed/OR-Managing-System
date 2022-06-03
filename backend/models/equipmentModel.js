@@ -4,12 +4,23 @@ const Room = require("./roomModel");
 
 const equipmentSchema = new mongoose.Schema(
   {
+    EID: {
+      type: Number,
+      required: [true, "Please include equipment Id"],
+      unique: true,
+    },
     name: {
       type: String,
       required: [true, "Please include the equipment name"],
       trim: true,
     },
-    factory: String,
+    manufacturer: String,
+    manufacturingDate: Date,
+    installingDate: Date,
+    type: {
+      type: String,
+      enum: ["Static", "Dynamic"],
+    },
     durationBetweenCheckup: {
       type: Number,
       required: [
@@ -31,6 +42,7 @@ const equipmentSchema = new mongoose.Schema(
       required: [true, "Equipment Loction Must be included"], //Could be modified according to admin input
     },
     previousRoom: {
+      // Atribute for static equip
       type: mongoose.Schema.ObjectId,
       ref: "Room",
       default: function () {
@@ -53,6 +65,17 @@ const equipmentSchema = new mongoose.Schema(
         },
       },
     ],
+    schedule: [
+      // Atribute for dynamic equip
+      {
+        operation: {
+          type: mongoose.Schema.ObjectId,
+          ref: "Operation",
+        },
+        start: Date,
+        end: Date,
+      },
+    ],
   },
   {
     toJSON: { virtuals: true },
@@ -65,13 +88,11 @@ equipmentSchema.pre("save", async function (next) {
     this.room,
     {
       $push: {
-        equipments: {
-          equipment: this.id,
-        },
+        equipments: this.id,
       },
     },
     (err) => {
-      return next(new AppError("there is no room with this Id", 400));
+      return next(new AppError("there is no room with this ID", 400));
     }
   );
 });
@@ -115,6 +136,20 @@ equipmentSchema.pre("findOneAndUpdate", async function (next) {
   );
   next();
 });
-
+equipmentSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "room",
+    select: "RID",
+  })
+    .populate({
+      path: "previousRoom",
+      select: "RID",
+    })
+    .populate({
+      path: "schedule.operation",
+      select: "id",
+    });
+  next();
+});
 const Equipment = mongoose.model("Equipment", equipmentSchema);
 module.exports = Equipment;

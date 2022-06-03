@@ -15,6 +15,14 @@ const supplySchema = new mongoose.Schema(
       type: Number,
       required: true,
     }, //editable by OR admin
+    inNeed: {
+      type: Boolean,
+      default: false,
+    },
+    needed: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     toJSON: { virtuals: true },

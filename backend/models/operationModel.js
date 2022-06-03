@@ -2,10 +2,22 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const User = require("./userModel");
 const Room = require("./roomModel");
-const AppError = require("../utils/appError");
+const Equipment = require("./equipmentModel");
+const Scheduling = require("./../utils/Scheduling");
+const req = require("express/lib/request");
 
 const operationSchema = new mongoose.Schema(
   {
+    type: {
+      type: String,
+      enum: ["Emergency", "Outpatient"],
+      required: true,
+    },
+    details: String,
+    department: {
+      type: String,
+      enum: ["Cardiology", "Gastroenterology", "Neurology"],
+    },
     staff: [
       {
         type: mongoose.Schema.ObjectId,
@@ -26,7 +38,23 @@ const operationSchema = new mongoose.Schema(
         },
         end: {
           type: Date,
+          required: [true, "please mention the end time "],
+        },
+      },
+    ],
+    equipments: [
+      {
+        equip: {
+          type: mongoose.Schema.ObjectId,
+          ref: "Equipment",
+        },
+        start: {
+          type: Date,
           required: [true, "please mention the start time "],
+        },
+        end: {
+          type: Date,
+          required: [true, "please mention the end time "],
         },
       },
     ],
@@ -38,23 +66,43 @@ const operationSchema = new mongoose.Schema(
     },
     supplies: [
       {
-        type: mongoose.Schema.ObjectId,
-        ref: "Supply",
-        Quantity: {
+        id: {
+          type: mongoose.Schema.ObjectId,
+          ref: "Supply",
+          required: [true, "please enter supply id"],
+        },
+        quantity: {
           type: Number,
+          required: [true, "please enter supply quanitity"],
         },
       },
     ],
 
-    price: Number,
+    cost: Number,
     reservationTime: {
       type: Date,
       default: Date.now(),
     },
     OperationStatus: {
       type: String,
-      enum: ["On Schedule", "Done", "Canceled", "Postponed"],
-      default: "On Schedule",
+      enum: ["On Schedule", "Done", "Canceled", "Postponed", "Pending"],
+      default: "Pending",
+    },
+    patientAcceptance: {
+      type: String,
+      enum: ["Pending", "Accept", "Refuse"],
+      default: "Pending",
+    },
+    doctorAcceptance: {
+      type: String,
+      enum: ["Pending", "Accept", "Refuse"],
+      default: "Pending",
+    },
+    mainDoctor: {
+      //same doctor sending the request
+      type: mongoose.Schema.ObjectId,
+      ref: "User",
+      required: true,
     },
   },
 
@@ -73,169 +121,116 @@ operationSchema.virtual("end").get(function () {
   return rooms[rooms.length - 1].end;
 });
 
-operationSchema.pre("findOneAndUpdate", async function (next) {
+// operationSchema.pre("findOneAndUpdate", async function () {
+//   const { _id } = this.getQuery();
+//   const doc = await Operation.findById(_id);
+//   req.rooms = doc.rooms;
+// });
+
+// Updating staff, rooms, and patient schedule when updating operation
+operationSchema.post("findOneAndUpdate", async function () {
   const { _id } = this.getQuery();
   const doc = await Operation.findById(_id);
-  doc.staff.forEach(async (element) => {
-    const Schedule = await User.findById(element).select("schedule");
-    let count = 0;
 
-    Schedule["schedule"].forEach((element) => {
-      if (element.operation.equals(doc._id)) {
-        count += 1;
-      }
-    });
-    await User.findById(element, function (err, document) {
-      document.schedule[count] = {
-        start: doc.start,
-        end: doc.end,
-        operation: doc._id,
-      };
-      document.markModified("schedule");
-      document.save();
-    }).clone();
-  });
-  const Pschedule = doc.patient["schedule"];
-  let count = 0;
-
-  Pschedule.forEach((element) => {
-    if (element.operation.equals(doc._id)) {
-      count += 1;
+  const removedRooms = Scheduling.checkRoomChange(req.rooms, doc.rooms);
+  if (removedRooms) {
+    for (element of removedRooms) {
+      await Scheduling.deleteSchedule(doc, Room, element.room, element.start);
     }
-  });
-  await User.findById(doc.patient._id, function (err, document) {
-    console.log(document.schedule);
-    document.schedule[count] = {
-      start: doc.start,
-      end: doc.end,
-      operation: doc._id,
-    };
-    document.markModified("schedule");
-    document.save();
-  }).clone();
-
-  doc.rooms.forEach(async (element) => {
-    const Schedule = await Room.findById(element.room).select("schedule");
-    let count = 0;
-    let counter = 0;
-    Schedule["schedule"].forEach((element) => {
-      if (element.operation.equals(doc._id)) {
-        count += 1;
-      }
-    });
-    await Room.findById(element.room, function (err, document) {
-      document.schedule[count] = {
-        start: doc.rooms[counter].start,
-        end: doc.rooms[counter].end,
-        operation: doc._id,
-      };
-      document.markModified("schedule");
-      document.save();
-    }).clone();
-    counter += 1;
-  });
+  }
+  for (element of doc.staff) {
+    await Scheduling.updateSchedule(doc, User, element, doc.start, doc.end);
+  }
+  await Scheduling.updateSchedule(doc, User, doc.patient, doc.start, doc.end);
+  let i = 0;
+  for (element of doc.rooms) {
+    await Scheduling.updateSchedule(
+      doc,
+      Room,
+      element.room,
+      doc.rooms[i].start,
+      doc.rooms[i].end
+    );
+    i += 1;
+  }
 });
 
-operationSchema.pre("save", function (next) {
+// Check if any of staff, rooms, and patient has a reservation during operation
+operationSchema.pre("save", async function (next) {
   const staff = this.staff;
 
-  staff.forEach(async (element) => {
-    const Schedule = await User.findById(element).select("schedule");
-    let times = 0;
-    Schedule["schedule"].forEach((element) => {
-      if (this.start <= element.end && element.start <= this.end) {
-        times = times + 1;
-        return next(new AppError("there is a reservation at this time", 500));
-        return 0;
-      }
-    });
-    if (times == 0) next();
-  });
-});
-operationSchema.pre("save", function (next) {
+  for (element of staff) {
+    await Scheduling.checkUserSchedule(this, User, element, next);
+  }
+  await Scheduling.checkUserSchedule(this, User, this.patient, next);
   const rooms = this.rooms;
-
-  rooms.forEach(async (element) => {
-    const Schedule = await Room.findById(element.room).select("schedule");
-    let times = 0;
-    Schedule["schedule"].forEach((element) => {
-      if (this.start <= element.end && element.start <= this.end) {
-        times = times + 1;
-        return next(new AppError("there is a reservation at this time", 500));
-        return 0;
-      }
-    });
-    if (times == 0) next();
-  });
-});
-
-operationSchema.pre("save", async function (next) {
-  if (!this.isNew) return next();
-  this.rooms.forEach(async (element) => {
-    await Room.findByIdAndUpdate(element.room, {
-      $push: {
-        schedule: {
-          start: element.start,
-          end: element.end,
-          operation: this._id,
-        },
-      },
-    });
-  });
-  this.rooms.forEach(async (element) => {
-    await Room.findByIdAndUpdate(element.room, {
-      $push: { operations: this._id },
-    });
-  });
-  await User.findByIdAndUpdate(this.patient, {
-    $push: {
-      schedule: { start: this.start, end: this.end, operation: this._id },
-      operations: this._id,
-    },
-  });
-
-  this.staff.forEach(async (element) => {
-    await User.findByIdAndUpdate(element, {
-      $push: {
-        schedule: { start: this.start, end: this.end, operation: this._id },
-      },
-    });
-  });
-
+  for (element of rooms) {
+    await Scheduling.checkRoomSchedule(
+      element.start,
+      element.end,
+      Room,
+      element.room,
+      next
+    );
+  }
+  const equips = this.equipments;
+  for (element of equips) {
+    await Scheduling.checkRoomSchedule(
+      element.start,
+      element.end,
+      Equipment,
+      element.equip,
+      next
+    );
+  }
+  req.rooms = this.rooms;
   next();
 });
 
+// adding Schedule to staff, rooms, and patient before creating the operation
+operationSchema.pre("save", async function (next) {
+  if (
+    this.doctorAcceptance === "Accept" &&
+    this.patientAcceptance === "Accept"
+  ) {
+    this.OperationStatus = "On Schedule";
+    if (
+      !(
+        this.isModified("doctorAcceptance") ||
+        this.isModified("patientAcceptance")
+      )
+    )
+      return next();
+
+    for (element of this.rooms) {
+      await Scheduling.addRoomSchedule(this, Room, element);
+    }
+    for (element of this.equipments) {
+      await Scheduling.addRoomSchedule(this, Equipment, element);
+    }
+    await Scheduling.addUserSchedule(this, User, this.patient);
+    await Scheduling.addUserSchedule(this, User, this.mainDoctor);
+    for (element of this.staff) {
+      await Scheduling.addUserSchedule(this, User, element);
+    }
+
+    next();
+  } else next();
+});
+
+// deleting the schedule from staff, rooms, and patient before deleting operation
 operationSchema.pre("findOneAndDelete", async function (next) {
   const doc = await Operation.findById(this.getQuery()._id);
-  doc.staff.forEach(async (element) => {
-    console.log(element);
-    await User.findByIdAndUpdate(
-      element.id,
-      {
-        $pull: {
-          schedule: { operation: doc._id },
-        },
-      },
-      { multi: true }
-    );
-  });
-  doc.rooms.forEach(async (element) => {
-    console.log(element);
-    await Room.findByIdAndUpdate(
-      element.room,
-      {
-        $pull: {
-          schedule: { operation: doc._id },
-        },
-      },
-      { multi: true }
-    );
-  });
-  await User.findByIdAndUpdate(
-    doc.patient.id,
-    { $pull: { schedule: { operation: doc._id } } },
-    { multi: true }
-  );
+  for (element of doc.staff) {
+    await Scheduling.deleteSchedule(doc, User, element.id);
+  }
+  for (element of doc.rooms) {
+    await Scheduling.deleteSchedule(doc, Room, element.room);
+  }
+  for (element of doc.equipments) {
+    await Scheduling.deleteSchedule(doc, Equipment, element.room);
+  }
+  await Scheduling.deleteSchedule(doc, User, doc.patient);
 
   next();
 });
@@ -243,16 +238,20 @@ operationSchema.pre("findOneAndDelete", async function (next) {
 //Populating from other documents
 operationSchema.pre(/^find/, function (next) {
   this.populate({
-    path: "rooms",
-    select: "-__v -_id -operations",
+    path: "equipments.equip",
+    select: "EID name",
   })
     .populate({
       path: "staff",
-      select: "fName lName role phone ",
+      select: "name role SSN",
     })
     .populate({
       path: "patient",
-      select: "-__v ",
+      select: "name SSN",
+    })
+    .populate({
+      path: "supplies.id",
+      select: "SID name",
     });
   next();
 });

@@ -8,50 +8,50 @@ router
   .route("/")
   .post(
     authController.protect,
-    authController.restrictTo("officer", "admin"),
+    authController.restrictTo("ORadmin", "admin"),
     equipmentController.createEquipment
+  );
+
+router
+  .route("/available-equipment")
+  .get(
+    authController.protect,
+    authController.restrictTo("ORadmin"),
+    equipmentController.getAvailableEquip
   );
 
 router
   .route("/:id")
   .get(
     authController.protect,
-    authController.restrictTo("officer", "admin"),
+    authController.restrictTo("admin", "ORadmin"),
     equipmentController.getEquipment
   )
   .delete(
     authController.protect,
-    authController.restrictTo("officer", "admin"),
+    authController.restrictTo("admin"),
     equipmentController.deleteEquipment
   )
   .patch(
     authController.protect,
-    authController.restrictTo("officer", "admin"),
+    authController.restrictTo("admin", "ORadmin"),
     equipmentController.updateEquipment
   );
 
 router
-  .route("/add_checkup")
+  .route("/add_checkup/:id")
   .post(
     authController.protect,
-    authController.restrictTo("officer"),
+    authController.restrictTo("ORadmin"),
     equipmentController.addCheckup
   );
 
 router
-  .route("/check_calibration")
-  .get(
-    authController.protect,
-    authController.restrictTo("officer"),
-    equipmentController.checkCalibration
-  );
-
-router
-  .route("/need_calibration")
+  .route("/need_calibration/:id")
   .patch(
     authController.protect,
-    authController.restrictTo("officer"),
-    equipmentController.checkCalibration
+    authController.restrictTo("ORadmin"),
+    equipmentController.needCalibtation
   );
 
 module.exports = router;

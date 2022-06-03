@@ -1,11 +1,14 @@
 const handlerFactory = require("./handlerFactory");
 const catchAsync = require("./../utils/CatchAsync");
 const Room = require("./../models/roomModel");
+const AppError = require("../utils/appError");
+// const AppError = require("./")
 
 exports.createRoom = handlerFactory.CreateOne(Room);
 exports.getRoom = handlerFactory.getOne(Room, { path: "operations" });
 exports.deleteRoom = handlerFactory.deleteOne(Room);
 exports.updateRoom = handlerFactory.updateOne(Room);
+exports.getAllRooms = handlerFactory.getAll(Room);
 
 exports.getAvailableRooms = catchAsync(async (req, res, next) => {
   const roomType = req.query.type;
@@ -42,6 +45,17 @@ exports.getAvailableRooms = catchAsync(async (req, res, next) => {
       AvailableDays: avaDays,
       AvailableDurations: durations,
     },
+  });
+});
+
+exports.sterilization = catchAsync(async (req, res, next) => {
+  room = await Room.findByIdAndUpdate(req.params.id, {
+    lastSterilazation: new Date(),
+  });
+  if (!room) return next(new AppError("No room found with this id", 400));
+  res.status(200).json({
+    status: "success",
+    message: "sterilization is successfully recorded",
   });
 });
 
@@ -128,10 +142,6 @@ const dateConverter = (date, hour, val) => {
   }
   var isodate = date2.toISOString();
   return isodate;
-};
-
-const checkDayBetween = (d1, d2, d3) => {
-  d3 > d1 && d3 < d2 ? true : false;
 };
 
 var getDaysBetween = function (from, to) {

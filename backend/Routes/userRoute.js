@@ -4,16 +4,42 @@ const authController = require("../Controllers/authController");
 
 const router = express.Router();
 
+router.post("/signup", authController.signup);
 router.post("/login", authController.login);
 router
   .route("/myUpOps")
   .get(authController.protect, userController.getUpcomingOperations);
+router
+  .route("/requests")
+  .get(
+    authController.protect,
+    authController.restrictTo("lead-doctor", "lead-nurse", "ORadmin", "admin"),
+    userController.userInBody,
+    userController.getPendingRequests
+  );
 router
   .route("/myPrevOps")
   .get(authController.protect, userController.getPerviousOperations);
 router
   .route("/patients")
   .get(authController.protect, userController.getMyPatients);
+router
+  .route("/emergency")
+  .get(
+    authController.protect,
+    authController.restrictTo("ORadmin"),
+    userController.availableDoctor
+  );
+router.patch("/updateMe", authController.protect, userController.updateMe);
+router.get("/me", authController.protect, userController.getMe);
+
+router
+  .route("/is-available/:id")
+  .get(
+    authController.protect,
+    authController.restrictTo("ORadmin"),
+    userController.isAvailable
+  );
 router
   .route("/")
   .post(
@@ -33,7 +59,6 @@ router
     authController.protect,
     authController.restrictTo("admin"),
     userController.updateUser
-  )
-  .patch(authController.protect, userController.updateMe);
+  );
 
 module.exports = router;

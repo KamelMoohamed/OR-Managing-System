@@ -10,9 +10,9 @@ const userSchema = new mongoose.Schema(
       unique: true,
       required: true,
     },
-    Name: {
+    name: {
       type: String,
-      required: [true, "the doctor must have first name"],
+      required: [true, "the User must have first name"],
       trim: true,
     },
     email: {
@@ -27,16 +27,14 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: [
         "lead-doctor",
-        "doctor-training",
-        "doctor-Assistant",
+        "doctor",
         "lead-nurse",
         "nurse",
-        "officer",
         "patient",
         "admin",
         "ORadmin",
       ],
-      required: true,
+      default: "patient",
     },
     major: {
       type: String,
@@ -44,12 +42,10 @@ const userSchema = new mongoose.Schema(
     },
     phone: [
       {
-        type: Number,
+        type: String,
       },
     ],
-    address: {
-      type: String,
-    },
+    address: String,
     password: {
       type: String,
       required: [true, "please insert a password"],
@@ -67,7 +63,10 @@ const userSchema = new mongoose.Schema(
       enum: ["female", "male"],
       required: true,
     },
-    birthDate: Date,
+    birthDate: {
+      type: Date,
+      required: true,
+    },
     schedule: [
       {
         operation: {
@@ -78,31 +77,38 @@ const userSchema = new mongoose.Schema(
         end: Date,
       },
     ],
-    // operations: [
-    //   {
-    //     type: mongoose.Schema.ObjectId,
-    //     ref: "Operation",
-    //   },
-    // ],
-    Scans: [{ type: String }],
-    History: String,
     worksSince: Date,
-    dependent: [
+    emergencyday: {
+      type: Number,
+      min: 0,
+      max: 6,
+    },
+    department: {
+      type: String,
+      enum: [
+        "Anesthesiologist",
+        "Cardiologist",
+        "Gastroenterologist",
+        "Neurologist",
+      ],
+    },
+    medicalRecord: [
       {
-        SSN: {
+        type: {
           type: String,
-          unique: true,
+          enum: [
+            "Blood Pressure",
+            "Cholestrol Level",
+            "Glucose Level",
+            "Scan",
+            "Allergy",
+            "History",
+          ],
           required: true,
         },
-        name: {
-          type: String,
-          required: true,
-        },
-        birthDate: Date,
-        gender: {
-          type: String,
-          enum: ["female", "male"],
-        },
+        details: String,
+        value: String,
+        scanImg: String,
       },
     ],
   },
@@ -111,17 +117,6 @@ const userSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
-
-// userSchema.pre(/^find/, function (next) {
-//   this.populate({
-//     path: "schedule",
-//     populate: {
-//       path: "operation",
-//     },
-//   });
-
-//   next();
-// });
 
 userSchema.pre("save", async function (next) {
   // Only run this function if password was actually modified
