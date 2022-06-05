@@ -124,6 +124,29 @@ exports.getPendingRequests = CatchAsync(async (req, res, next) => {
     },
   });
 });
+exports.getPendingOperations = CatchAsync(async (req, res, next) => {
+  var ops;
+  if (req.user.role === "lead-doctor") {
+    console.log(req.user.role);
+    ops = await Operation.find({
+      doctorAcceptance: "Pending",
+      mainDoctor: req.user._id,
+    });
+    console.log(ops);
+  } else if (req.user.role === "patient") {
+    ops = await Operation.find({
+      patientAcceptance: "Pending",
+      patient: req.user,
+    });
+  }
+  res.status(200).json({
+    status: "success",
+    pendingOps: {
+      ops,
+    },
+  });
+});
+
 exports.availableDoctor = CatchAsync(async (req, res, next) => {
   const doctors = await User.find({
     role: { $in: ["lead-doctor", "doctor", "doctor-Assistant"] },

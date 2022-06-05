@@ -10,6 +10,13 @@ router
   .route("/myUpOps")
   .get(authController.protect, userController.getUpcomingOperations);
 router
+  .route("/pending-operations")
+  .get(
+    authController.protect,
+    authController.restrictTo("lead-doctor", "patient"),
+    userController.getPendingOperations
+  );
+router
   .route("/requests")
   .get(
     authController.protect,
