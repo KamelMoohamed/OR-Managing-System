@@ -1,4 +1,5 @@
 const Supply = require("./../models/supplyModel");
+const { notifyAdmin } = require("./notification");
 const addSupply = async (added) => {
   let documents = [];
   for (let i = 0; i < added.length; i++) {
@@ -39,14 +40,21 @@ const checkSupplies = async (removed) => {
     if (!docs) return false;
     documents.push(docs);
   }
+  let notiFlag = false;
   for (let i = 0; i < documents.length; i++) {
     if (documents[i].quantity - removed[i].quantity < 0) {
       documents[i].inNeed = true;
       documents[i].needed = -documents[i].quantity + removed[i].quantity;
+      notiFlag = true;
     }
-
     await documents[i].save();
   }
+  if (notiFlag)
+    await Notification.notifyAdmin(
+      "Supllies Alert",
+      "You need to check rooms supllies, Some is running out",
+      "ORadmin"
+    );
   return true;
 };
 

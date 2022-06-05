@@ -81,6 +81,7 @@ requestSchema.post("findOneAndUpdate", async function (next) {
     await notification.notifyAdmin(
       "OP request",
       "you have a completed request for an operation",
+      "ORadmin",
       doc.id
     );
   }

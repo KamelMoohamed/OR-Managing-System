@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
+const notification = require("../utils/notification.js");
 
 const complainSchema = new mongoose.Schema({
   Name: {
@@ -31,6 +32,23 @@ const complainSchema = new mongoose.Schema({
     type: Date,
     default: Date.now(),
   },
+});
+
+complainSchema.pre("save", async function (next) {
+  if (this.isNew)
+    await notification.notifyAdmin(
+      "New Compliant",
+      "New Complaint has been sent to you organization",
+      "admin"
+    );
+  if (this.isModified("status") && this.status === "To admin")
+    await notification.notifyAdmin(
+      "Forwarded complaint",
+      "New Complaint has forwarded to you to reply it",
+      "ORadmin"
+    );
+
+  next();
 });
 
 const Complain = mongoose.model("Complain", complainSchema);

@@ -60,7 +60,7 @@ exports.getAvailableEquip = CatchAsync(async (req, res, next) => {
     );
   res.status(200).json({
     status: "success",
-    equipments: "Check up added successfully",
+    equipments: equips,
   });
 });
 

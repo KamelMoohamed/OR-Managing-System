@@ -4,10 +4,13 @@ const CatchAsync = require("./../utils/CatchAsync");
 const Operation = require("./../models/operationModel");
 const suppliesHandler = require("./../utils/SuppliesHandler");
 const AppError = require("../utils/appError");
+const notification = require("./../utils/notification");
 
 exports.checkSupplies = async () => {
-  let Today = Date.now().setHours(0, 0, 0, 0);
-  let Tomorrow = Date.now().setHours(23, 59, 59, 0);
+  let Today = new Date();
+  Today.setHours(0, 0, 0, 0);
+  let Tomorrow = new Date();
+  Tomorrow.setHours(23, 59, 59, 0);
   const operations = await Operation.find({
     rooms: {
       $elemMatch: {
