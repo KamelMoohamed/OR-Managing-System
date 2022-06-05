@@ -6,6 +6,7 @@ const Operation = require("./../models/operationModel");
 const Request = require("./../models/requestModel");
 const mongoose = require("mongoose");
 const Scheduling = require("./../utils/Scheduling");
+const Notification = require("./../utils/notification");
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
@@ -100,7 +101,6 @@ exports.getPerviousOperations = CatchAsync(async (req, res, next) => {
 });
 
 exports.getPendingRequests = CatchAsync(async (req, res, next) => {
-  console.log(req.user.role);
   var requests;
   if (req.user.role === "lead-doctor") {
     requests = await Request.find({
@@ -189,6 +189,16 @@ exports.getMe = CatchAsync(async (req, res, next) => {
     user: req.user,
   });
 });
+
+exports.getNotification = CatchAsync(async (req, res, next) => {
+  const notification = req.user.notification;
+  notification.sort((a, b) => (a.date > b.date ? -1 : 1));
+  res.status(200).json({
+    status: "success",
+    notification,
+  });
+});
+
 exports.createUser = handlerFactory.CreateOne(User);
 exports.getUser = handlerFactory.getOne(User);
 exports.deleteUser = handlerFactory.deleteOne(User);

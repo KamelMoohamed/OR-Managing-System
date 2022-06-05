@@ -39,6 +39,11 @@ router
   );
 router.patch("/updateMe", authController.protect, userController.updateMe);
 router.get("/me", authController.protect, userController.getMe);
+router.get(
+  "/notification",
+  authController.protect,
+  userController.getNotification
+);
 
 router
   .route("/is-available/:id")

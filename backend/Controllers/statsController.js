@@ -84,7 +84,7 @@ const operationEach = CatchAsync(async (req, res, next) => {
     if (req.body.groupdate == "day") groupdate["$dayOfWeek"] = "$rooms.end";
     else if (req.body.groupdate == "week") groupdate["$week"] = "$rooms.end";
     else if (req.body.groupdate == "month") groupdate["$month"] = "$rooms.end";
-    else if (req.body.groupdate == "year") groupdate["$year"] == "$rooms.end";
+    else if (req.body.groupdate == "year") groupdate["$year"] = "$rooms.end";
     group[req.body.groupdate] = groupdate;
   }
   let match = {};

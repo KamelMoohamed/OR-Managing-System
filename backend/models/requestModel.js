@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const User = require("./userModel");
+const notification = require("./../utils/notification");
 
 const requestSchema = new mongoose.Schema({
   department: {
@@ -45,6 +46,7 @@ const requestSchema = new mongoose.Schema({
       "No Nurse found with this SSN",
     ],
   },
+
   supplies: [
     {
       name: String,
@@ -57,6 +59,31 @@ const requestSchema = new mongoose.Schema({
     enum: ["Approved", "Admin Pending", "Nurse Pending"],
     default: "Nurse Pending",
   },
+});
+
+requestSchema.virtual("nurse").get(async function () {
+  const nurseId = await User.findOne({ SSN: this.nurseSSN }).select("id");
+  return nurseId;
+});
+requestSchema.pre("save", async function (next) {
+  if (!this.isNew()) return next();
+  await notification.notify(
+    this.nurse,
+    "adding request",
+    "You have a new operation request to finish",
+    this.id
+  );
+});
+requestSchema.post("findOneAndUpdate", async function (next) {
+  const { _id } = this.getQuery();
+  const doc = await Request.findById(_id);
+  if ((doc.status = "Admin Pending")) {
+    await notification.notifyAdmin(
+      "OP request",
+      "you have a completed request for an operation",
+      doc.id
+    );
+  }
 });
 requestSchema.pre(/^find/, async function (next) {
   this.populate({

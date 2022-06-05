@@ -4,6 +4,7 @@ const User = require("./userModel");
 const Room = require("./roomModel");
 const Equipment = require("./equipmentModel");
 const Scheduling = require("./../utils/Scheduling");
+const notification = require("./../utils/notification");
 const req = require("express/lib/request");
 
 const operationSchema = new mongoose.Schema(
@@ -140,8 +141,34 @@ operationSchema.post("findOneAndUpdate", async function () {
   }
   for (element of doc.staff) {
     await Scheduling.updateSchedule(doc, User, element, doc.start, doc.end);
+    await notification.notify(
+      [element.id],
+      "Updating Operation",
+      `your have an updated operation`,
+      _id
+    );
   }
+  await Scheduling.updateSchedule(
+    doc,
+    User,
+    doc.mainDoctor,
+    doc.start,
+    doc.end
+  );
   await Scheduling.updateSchedule(doc, User, doc.patient, doc.start, doc.end);
+  await Scheduling.updateSchedule(
+    doc,
+    User,
+    doc.mainDoctor,
+    doc.start,
+    doc.end
+  );
+  await notification.notify(
+    [doc.patient, doc.mainDoctor],
+    "Updating Operation",
+    `your have an updated operation`,
+    _id
+  );
   let i = 0;
   for (element of doc.rooms) {
     await Scheduling.updateSchedule(
@@ -163,6 +190,7 @@ operationSchema.pre("save", async function (next) {
     await Scheduling.checkUserSchedule(this, User, element, next);
   }
   await Scheduling.checkUserSchedule(this, User, this.patient, next);
+  await Scheduling.checkUserSchedule(this, User, this.mainDoctor, next);
   const rooms = this.rooms;
   for (element of rooms) {
     await Scheduling.checkRoomSchedule(
@@ -190,6 +218,18 @@ operationSchema.pre("save", async function (next) {
 // adding Schedule to staff, rooms, and patient before creating the operation
 operationSchema.pre("save", async function (next) {
   if (
+    this.doctorAcceptance === "Pending" &&
+    this.patientAcceptance === "Pending"
+  ) {
+    await notification.notify(
+      [this.patient, this.mainDoctor],
+      "Pending Operation",
+      `you have an operation to accept`,
+      this.id
+    );
+  }
+
+  if (
     this.doctorAcceptance === "Accept" &&
     this.patientAcceptance === "Accept"
   ) {
@@ -210,8 +250,20 @@ operationSchema.pre("save", async function (next) {
     }
     await Scheduling.addUserSchedule(this, User, this.patient);
     await Scheduling.addUserSchedule(this, User, this.mainDoctor);
+    await notification.notify(
+      [this.patient, this.mainDoctor],
+      "new Operation",
+      `there is a new operation has been added to your schedule`,
+      this.id
+    );
     for (element of this.staff) {
       await Scheduling.addUserSchedule(this, User, element);
+      await notification.notify(
+        [element.id],
+        "new Operation",
+        `there is a new operation has been added to your schedule`,
+        this.id
+      );
     }
 
     next();
@@ -222,7 +274,22 @@ operationSchema.pre("save", async function (next) {
 operationSchema.pre("findOneAndDelete", async function (next) {
   const doc = await Operation.findById(this.getQuery()._id);
   for (element of doc.staff) {
-    await Scheduling.deleteSchedule(doc, User, element.id);
+    await Scheduling.deleteSchedule(doc, User, element);
+    await notification.notify(
+      [element.id],
+      "deleting Operation",
+      `your operation from ${doc.start.toLocaleString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        month: "short",
+        day: "numeric",
+      })} to ${doc.end.toLocaleString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        month: "short",
+        day: "numeric",
+      })} has been canceled`
+    );
   }
   for (element of doc.rooms) {
     await Scheduling.deleteSchedule(doc, Room, element.room);
@@ -231,6 +298,22 @@ operationSchema.pre("findOneAndDelete", async function (next) {
     await Scheduling.deleteSchedule(doc, Equipment, element.room);
   }
   await Scheduling.deleteSchedule(doc, User, doc.patient);
+  await Scheduling.deleteSchedule(doc, User, doc.mainDoctor);
+  await notification.notify(
+    [this.patient, this.mainDoctor],
+    "deleting Operation",
+    `your operation from ${doc.start.toLocaleString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      month: "short",
+      day: "numeric",
+    })} to ${doc.end.toLocaleString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      month: "short",
+      day: "numeric",
+    })} has been canceled`
+  );
 
   next();
 });
@@ -252,6 +335,10 @@ operationSchema.pre(/^find/, function (next) {
     .populate({
       path: "supplies.id",
       select: "SID name",
+    })
+    .populate({
+      path: "mainDoctor",
+      select: "SSN name",
     });
   next();
 });

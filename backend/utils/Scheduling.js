@@ -41,6 +41,7 @@ const checkUserSchedule = async (doc, Model, userId, next) => {
 const checkRoomSchedule = async (start, end, Model, roomId, next) => {
   const Schedule = await Model.findById(roomId).select("schedule RID capacity");
   let times = 0;
+  if (!Schedule) return next(new AppError("No room with that Id", 400));
   Schedule["schedule"].forEach((element) => {
     if (start <= element.end && element.start <= end) {
       times = times + 1;

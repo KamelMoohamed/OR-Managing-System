@@ -36,6 +36,7 @@ exports.getAvailableEquip = CatchAsync(async (req, res, next) => {
   if (!equips) return next(new AppError("No Equipment with this name", 400));
   const start = req.query.start;
   const end = req.query.end;
+  console.log(req.query);
   if (!start || !end)
     return next(
       new AppError(
@@ -55,7 +56,7 @@ exports.getAvailableEquip = CatchAsync(async (req, res, next) => {
   });
   if (num >= equips.length)
     return next(
-      new AppError(`there is no available ${name} for this time`, 500)
+      new AppError(`there is no available ${req.query.name} for this time`, 500)
     );
   res.status(200).json({
     status: "success",

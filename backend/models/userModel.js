@@ -111,6 +111,25 @@ const userSchema = new mongoose.Schema(
         scanImg: String,
       },
     ],
+    notification: [
+      {
+        type: {
+          type: String,
+          required: [true, "please write the type of notification"],
+        },
+        message: {
+          type: String,
+          required: [true, "please write the message"],
+        },
+        id: {
+          type: mongoose.Schema.ObjectId,
+        },
+        date: {
+          type: Date,
+          default: Date.now(),
+        },
+      },
+    ],
   },
   {
     toJSON: { virtuals: true },
