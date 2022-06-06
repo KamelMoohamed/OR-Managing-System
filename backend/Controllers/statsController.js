@@ -368,6 +368,7 @@ exports.nStaffOperation = CatchAsync(async (req, res, next) => {
       Today,
       req.user._id
     );
+    if (data["operations"].length == 0) data["operations"] = [0];
     Data.push(data);
   }
 
@@ -398,7 +399,7 @@ const manyOperations = async (start, end, id) => {
       },
     },
   ]);
-  return Data[0].Operations;
+  return Data.map(({ Operations }) => Operations);
 };
 const toPastDate = (days, date = new Date()) => {
   date = date.setDate(date.getDate() - days);
