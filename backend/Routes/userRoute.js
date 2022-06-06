@@ -58,6 +58,26 @@ router
     authController.protect,
     authController.restrictTo("admin"),
     userController.createUser
+  )
+  .get(
+    authController.protect,
+    authController.restrictTo("admin", "ORadmin"),
+    userController.getAllUser
+  );
+
+router
+  .route("/getalldoc")
+  .get(
+    authController.protect,
+    authController.restrictTo("admin", "ORadmin"),
+    userController.getallDoctors
+  );
+router
+  .route("/getallnurse")
+  .get(
+    authController.protect,
+    authController.restrictTo("admin", "ORadmin"),
+    userController.getallNurse
   );
 router
   .route("/:id")

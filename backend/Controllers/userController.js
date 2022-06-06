@@ -197,8 +197,33 @@ exports.getNotification = CatchAsync(async (req, res, next) => {
     notification,
   });
 });
+exports.getallDoctors = CatchAsync(async (req, res, next) => {
+  const docs = await User.find({ role: { $in: ["doctor", "lead-doctor"] } });
+
+  // SEND RESPONSE
+  res.status(200).json({
+    status: "success",
+    results: docs.length,
+    data: {
+      data: docs,
+    },
+  });
+});
+exports.getallNurse = CatchAsync(async (req, res, next) => {
+  const docs = await User.find({ role: { $in: ["nurse", "lead-nurse"] } });
+
+  // SEND RESPONSE
+  res.status(200).json({
+    status: "success",
+    results: docs.length,
+    data: {
+      data: docs,
+    },
+  });
+});
 
 exports.createUser = handlerFactory.CreateOne(User);
 exports.getUser = handlerFactory.getOne(User);
 exports.deleteUser = handlerFactory.deleteOne(User);
 exports.updateUser = handlerFactory.updateOne(User);
+exports.getAllUser = handlerFactory.getAll(User);
