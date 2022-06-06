@@ -249,6 +249,57 @@ exports.mostSupplies = CatchAsync(async (req, res, next) => {
     data,
   });
 });
+exports.nStaffOperation = CatchAsync(async (req, res, next) => {
+  let Today = new Date();
+  let lastWeek = toPastDate(7);
+  lstOfDays = [1, 7, 30, 365];
+  intervalsName = ["Day", "Week", "Month", "Year"];
+  Data = [];
+  for (i = 0; i < lstOfDays.length; i++) {
+    let data = {};
+    data["interval"] = intervalsName[i];
+    data["operations"] = await manyOperations(
+      toPastDate(lstOfDays[i]),
+      Today,
+      req.user._id
+    );
+    Data.push(data);
+  }
+
+  res.status(200).json({
+    status: "success",
+    Data,
+  });
+});
+
+const manyOperations = async (start, end, id) => {
+  const Data = await User.aggregate([
+    {
+      $unwind: "$schedule",
+    },
+    {
+      $match: {
+        "schedule.end": {
+          $gte: start,
+          $lte: end,
+        },
+        _id: id,
+      },
+    },
+    {
+      $group: {
+        _id: "$SSN",
+        Operations: { $sum: 1 },
+      },
+    },
+  ]);
+  return Data[0].Operations;
+};
+const toPastDate = (days, date = new Date()) => {
+  date = date.setDate(date.getDate() - days);
+  date = new Date(date);
+  return date;
+};
 exports.staffNumber = staffNumber;
 exports.staffWorkingHours = staffWorkingHours;
 exports.operationEach = operationEach;

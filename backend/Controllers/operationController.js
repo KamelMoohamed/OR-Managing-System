@@ -41,8 +41,8 @@ exports.finishOperation = CatchAsync(async (req, res, next) => {
     if (!flag) return next(new AppError("Something Wrong Happend", 500));
     docs.supplies = allSup;
   }
-  docs.status = "Done";
-  docs.save();
+  docs.OperationStatus = "Done";
+  await docs.save();
   res.status(200).json({
     status: "success",
     docs,

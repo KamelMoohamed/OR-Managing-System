@@ -28,7 +28,7 @@ const useSupply = async (removed) => {
     documents.push(docs);
   }
   for (let i = 0; i < documents.length; i++) {
-    document[i].quantity -= removed[i].quantity;
+    documents[i].quantity -= removed[i].quantity;
     await documents[i].save();
   }
   return true;

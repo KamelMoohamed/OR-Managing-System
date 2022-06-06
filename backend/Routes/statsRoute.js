@@ -55,4 +55,7 @@ router
     authController.restrictTo("ORadmin"),
     statsController.mostSupplies
   );
+router
+  .route("/many-operation")
+  .get(authController.protect, statsController.nStaffOperation);
 module.exports = router;

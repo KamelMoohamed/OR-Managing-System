@@ -185,7 +185,8 @@ operationSchema.post("findOneAndUpdate", async function () {
 // Check if any of staff, rooms, and patient has a reservation during operation
 operationSchema.pre("save", async function (next) {
   const staff = this.staff;
-
+  if (this.isModified("OperationStatus") && this.OperationStatus == "Done")
+    return next();
   for (element of staff) {
     await Scheduling.checkUserSchedule(this, User, element, next);
   }
@@ -217,6 +218,8 @@ operationSchema.pre("save", async function (next) {
 
 // adding Schedule to staff, rooms, and patient before creating the operation
 operationSchema.pre("save", async function (next) {
+  if (this.isModified("OperationStatus") && this.OperationStatus == "Done")
+    return next();
   if (
     this.doctorAcceptance === "Pending" &&
     this.patientAcceptance === "Pending"

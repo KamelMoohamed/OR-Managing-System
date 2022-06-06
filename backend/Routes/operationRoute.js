@@ -31,18 +31,18 @@ router
   );
 
 router
-  .route("/:id/:reply")
-  .patch(
-    authController.protect,
-    authController.restrictTo("lead-doctor", "patient"),
-    operationController.replyOperation
-  );
-router
   .route("/:id/finish")
   .patch(
     authController.protect,
     authController.restrictTo("lead-nurse"),
     operationController.finishOperation
+  );
+router
+  .route("/replay/:id/:reply")
+  .patch(
+    authController.protect,
+    authController.restrictTo("lead-doctor", "patient"),
+    operationController.replyOperation
   );
 
 module.exports = router;
