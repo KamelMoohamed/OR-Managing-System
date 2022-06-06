@@ -41,6 +41,7 @@ const roomSchema = new mongoose.Schema(
 );
 
 roomSchema.virtual("active").get(function () {
+  if (!this.schedule) return true;
   for (var i = this.schedule.length - 1; i >= 0; i--)
     checkTimeBetween(this.schedule[i].start, this.schedule[i].end, new Date())
       ? true

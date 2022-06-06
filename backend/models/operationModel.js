@@ -341,7 +341,7 @@ operationSchema.pre(/^find/, function (next) {
     })
     .populate({
       path: "mainDoctor",
-      select: "SSN name",
+      select: "SSN name department",
     });
   next();
 });
