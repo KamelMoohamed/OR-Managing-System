@@ -68,3 +68,4 @@ exports.getEquipment = handlerFactory.getOne(Equipment);
 exports.createEquipment = handlerFactory.CreateOne(Equipment);
 exports.updateEquipment = handlerFactory.updateOne(Equipment);
 exports.deleteEquipment = handlerFactory.deleteOne(Equipment);
+exports.getAllEquipment = handlerFactory.getAll(Equipment);

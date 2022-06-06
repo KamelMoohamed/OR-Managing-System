@@ -10,6 +10,11 @@ router
     authController.protect,
     authController.restrictTo("ORadmin", "admin"),
     equipmentController.createEquipment
+  )
+  .get(
+    authController.protect,
+    authController.restrictTo("ORadmin", "admin"),
+    equipmentController.getAllEquipment
   );
 
 router
