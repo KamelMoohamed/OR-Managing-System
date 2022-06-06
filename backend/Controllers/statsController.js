@@ -82,25 +82,25 @@ exports.operationEach = CatchAsync(async (req, res, next) => {
   let group = {};
   let groupdate = {};
   let num;
-  if (req.body.groupdate) {
-    if (req.body.groupdate == "day") {
+  if (req.query.groupdate) {
+    if (req.query.groupdate == "day") {
       groupdate["$dayOfWeek"] = "$rooms.end";
       num = 7;
-    } else if (req.body.groupdate == "week") {
+    } else if (req.query.groupdate == "week") {
       groupdate["$week"] = "$rooms.end";
       num = 52;
-    } else if (req.body.groupdate == "month") {
+    } else if (req.query.groupdate == "month") {
       groupdate["$month"] = "$rooms.end";
       num = 12;
-    } else if (req.body.groupdate == "year") {
+    } else if (req.query.groupdate == "year") {
       groupdate["$year"] = "$rooms.end";
     }
-    group[req.body.groupdate] = groupdate;
+    group[req.query.groupdate] = groupdate;
   }
   let match = {};
   let start = {};
   if (req.body.start) {
-    start["$gte"] = new Date(req.body.start);
+    start["$gte"] = new Date(req.query.start);
   }
   if (req.body.end) {
     start["$lte"] = new Date(req.body.end);
@@ -125,12 +125,12 @@ exports.operationEach = CatchAsync(async (req, res, next) => {
   ]);
   if (data.length != num) {
     const arr = [...Array(num).keys()];
-    newarr = data.map((a) => a._id[`${req.body.groupdate}`]);
+    newarr = data.map((a) => a._id[`${req.query.groupdate}`]);
     arr.forEach((el) => {
       if (!newarr.includes(el)) {
         index = {};
         index["_id"] = {};
-        index._id[`${req.body.groupdate}`] = el;
+        index._id[`${req.query.groupdate}`] = el;
         index["number"] = 0;
         data.push(index);
       }
@@ -146,20 +146,20 @@ exports.userEach = CatchAsync(async (req, res, next) => {
     return next(new AppError("you have no operations at all", 400));
   let group = {};
   let groupdate = {};
-  if (req.body.groupdate) {
-    if (req.body.groupdate == "day") {
+  if (req.query.groupdate) {
+    if (req.query.groupdate == "day") {
       groupdate["$dayOfWeek"] = "$rooms.end";
       num = 7;
-    } else if (req.body.groupdate == "week") {
+    } else if (req.query.groupdate == "week") {
       groupdate["$week"] = "$rooms.end";
       num = 52;
-    } else if (req.body.groupdate == "month") {
+    } else if (req.query.groupdate == "month") {
       groupdate["$month"] = "$rooms.end";
       num = 12;
-    } else if (req.body.groupdate == "year") {
+    } else if (req.query.groupdate == "year") {
       groupdate["$year"] = "$rooms.end";
     }
-    group[req.body.groupdate] = groupdate;
+    group[req.query.groupdate] = groupdate;
   }
   let match = {};
   let start = {};
@@ -207,12 +207,12 @@ exports.userEach = CatchAsync(async (req, res, next) => {
   ]);
   if (data.length != num) {
     const arr = [...Array(num).keys()];
-    newarr = data.map((a) => a._id[`${req.body.groupdate}`]);
+    newarr = data.map((a) => a._id[`${req.query.groupdate}`]);
     arr.forEach((el) => {
       if (!newarr.includes(el)) {
         index = {};
         index["_id"] = {};
-        index._id[`${req.body.groupdate}`] = el;
+        index._id[`${req.query.groupdate}`] = el;
         index["number"] = 0;
         data.push(index);
       }
@@ -372,6 +372,7 @@ exports.nStaffOperation = CatchAsync(async (req, res, next) => {
     Data.push(data);
   }
 
+  console.log(Data[0]._id.day);
   res.status(200).json({
     status: "success",
     Data,
