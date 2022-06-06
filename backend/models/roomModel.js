@@ -40,6 +40,16 @@ const roomSchema = new mongoose.Schema(
   }
 );
 
+roomSchema.virtual("active").get(function () {
+  for (var i = this.schedule.length - 1; i >= 0; i--)
+    checkTimeBetween(this.schedule[i].start, this.schedule[i].end, new Date())
+      ? true
+      : false;
+});
+const checkTimeBetween = (d1, d2, d3) => {
+  d3 > d1 && d3 < d2 ? true : false;
+};
+
 roomSchema.pre(/^find/, function (next) {
   this.populate({
     path: "equipments",

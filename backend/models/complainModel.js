@@ -37,13 +37,13 @@ const complainSchema = new mongoose.Schema({
 complainSchema.pre("save", async function (next) {
   if (this.isNew)
     await notification.notifyAdmin(
-      "New Compliant",
+      "payment",
       "New Complaint has been sent to you organization",
       "admin"
     );
   if (this.isModified("status") && this.status === "To admin")
     await notification.notifyAdmin(
-      "Forwarded complaint",
+      "warning-error",
       "New Complaint has forwarded to you to reply it",
       "ORadmin"
     );

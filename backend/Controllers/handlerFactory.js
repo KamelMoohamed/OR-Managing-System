@@ -7,6 +7,7 @@ exports.CreateOne = (Model) =>
     const newDoc = await Model.create(req.body);
     if (Model === Request) {
       newDoc.doctor = req.user;
+      newDoc.department = req.user.department;
       await newDoc.save();
     }
     res.status(201).json({

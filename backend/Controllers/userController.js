@@ -55,31 +55,32 @@ exports.getMyPatients = CatchAsync(async (req, res, next) => {
 });
 
 exports.getUpcomingOperations = CatchAsync(async (req, res, next) => {
-  const user = await User.findById(req.user.id);
+  const ops = await Operation.find({
+    rooms: { $elemMatch: { end: { $gte: Date.now() } } },
+    OperationStatus: "On Schedule",
+  });
 
-  if (!user) {
-    return next(new AppError("No User with that id", 404));
-  }
+  let preOps = [];
 
-  const ops = user.schedule;
-  var today = new Date();
   for (var i = ops.length - 1; i >= 0; i--) {
-    if (ops[i].end.getTime() > today.getTime()) {
-      ops.splice(i, 1);
-    }
+    users = ops[i].staff;
+    for (var j = users.length - 1; j >= 0; j--)
+      if (users[j].id === req.user.id) {
+        preOps.push(ops[i]);
+      }
   }
 
   res.status(200).json({
     status: "success",
     operations: {
-      ops,
+      preOps,
     },
   });
 });
 
 exports.getPerviousOperations = CatchAsync(async (req, res, next) => {
   const ops = await Operation.find({
-    rooms: { $elemMatch: { end: { $gte: Date.now() } } },
+    rooms: { $elemMatch: { end: { $lte: Date.now() } } },
   });
 
   let preOps = [];
@@ -114,7 +115,7 @@ exports.getPendingRequests = CatchAsync(async (req, res, next) => {
     });
   } else if (req.user.role === "ORadmin") {
     requests = await Request.find({
-      status: { $in: ["OR Pending"] },
+      status: { $in: ["OR Pending", "Nurse Pending"] },
     });
   }
   res.status(200).json({
@@ -127,12 +128,10 @@ exports.getPendingRequests = CatchAsync(async (req, res, next) => {
 exports.getPendingOperations = CatchAsync(async (req, res, next) => {
   var ops;
   if (req.user.role === "lead-doctor") {
-    console.log(req.user.role);
     ops = await Operation.find({
       doctorAcceptance: "Pending",
       mainDoctor: req.user._id,
     });
-    console.log(ops);
   } else if (req.user.role === "patient") {
     ops = await Operation.find({
       patientAcceptance: "Pending",

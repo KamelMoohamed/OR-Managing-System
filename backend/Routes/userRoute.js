@@ -7,7 +7,7 @@ const router = express.Router();
 router.post("/signup", authController.signup);
 router.post("/login", authController.login);
 router
-  .route("/myUpOps")
+  .route("/upcoming-operation")
   .get(authController.protect, userController.getUpcomingOperations);
 router
   .route("/pending-operations")
@@ -25,7 +25,7 @@ router
     userController.getPendingRequests
   );
 router
-  .route("/myPrevOps")
+  .route("/previous-operation")
   .get(authController.protect, userController.getPerviousOperations);
 router
   .route("/patients")

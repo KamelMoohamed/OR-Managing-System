@@ -143,7 +143,7 @@ operationSchema.post("findOneAndUpdate", async function () {
     await Scheduling.updateSchedule(doc, User, element, doc.start, doc.end);
     await notification.notify(
       [element.id],
-      "Updating Operation",
+      "warning-warning",
       `your have an updated operation`,
       _id
     );
@@ -165,7 +165,7 @@ operationSchema.post("findOneAndUpdate", async function () {
   );
   await notification.notify(
     [doc.patient, doc.mainDoctor],
-    "Updating Operation",
+    "warning-warning",
     `your have an updated operation`,
     _id
   );
@@ -226,8 +226,8 @@ operationSchema.pre("save", async function (next) {
   ) {
     await notification.notify(
       [this.patient, this.mainDoctor],
-      "Pending Operation",
-      `you have an operation to accept`,
+      "quiz",
+      `You have new operation to accept`,
       this.id
     );
   }
@@ -255,7 +255,7 @@ operationSchema.pre("save", async function (next) {
     await Scheduling.addUserSchedule(this, User, this.mainDoctor);
     await notification.notify(
       [this.patient, this.mainDoctor],
-      "new Operation",
+      "done",
       `there is a new operation has been added to your schedule`,
       this.id
     );
@@ -263,7 +263,7 @@ operationSchema.pre("save", async function (next) {
       await Scheduling.addUserSchedule(this, User, element);
       await notification.notify(
         [element.id],
-        "new Operation",
+        "done",
         `there is a new operation has been added to your schedule`,
         this.id
       );
@@ -280,7 +280,7 @@ operationSchema.pre("findOneAndDelete", async function (next) {
     await Scheduling.deleteSchedule(doc, User, element);
     await notification.notify(
       [element.id],
-      "deleting Operation",
+      "warning-error",
       `your operation from ${doc.start.toLocaleString("en-US", {
         hour: "2-digit",
         minute: "2-digit",
@@ -304,7 +304,7 @@ operationSchema.pre("findOneAndDelete", async function (next) {
   await Scheduling.deleteSchedule(doc, User, doc.mainDoctor);
   await notification.notify(
     [this.patient, this.mainDoctor],
-    "deleting Operation",
+    "warning-error",
     `your operation from ${doc.start.toLocaleString("en-US", {
       hour: "2-digit",
       minute: "2-digit",

@@ -5,7 +5,6 @@ const notification = require("./../utils/notification");
 const requestSchema = new mongoose.Schema({
   department: {
     type: String,
-    required: [true, "please mention the depratment name "],
   },
   doctor: {
     type: mongoose.Schema.ObjectId,
@@ -32,7 +31,6 @@ const requestSchema = new mongoose.Schema({
   paymentMethod: {
     type: String,
     enum: ["Cash", "Insurance"],
-    required: [true, "please mention payment method"],
   },
   nurseSSN: {
     type: Number,
@@ -69,7 +67,7 @@ requestSchema.pre("save", async function (next) {
   if (!this.isNew()) return next();
   await notification.notify(
     this.nurse,
-    "adding request",
+    "warning-warning",
     "You have a new operation request to finish",
     this.id
   );
@@ -79,7 +77,7 @@ requestSchema.post("findOneAndUpdate", async function (next) {
   const doc = await Request.findById(_id);
   if ((doc.status = "Admin Pending")) {
     await notification.notifyAdmin(
-      "OP request",
+      "warning-error",
       "you have a completed request for an operation",
       "ORadmin",
       doc.id
