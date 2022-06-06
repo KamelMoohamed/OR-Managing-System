@@ -17,7 +17,7 @@ const requestSchema = new mongoose.Schema({
     },
   ],
   patientSSN: {
-    type: Number,
+    type: String,
     required: [true, "The request needs a patient"],
     validate: [
       async function (patientSSN) {
@@ -33,7 +33,7 @@ const requestSchema = new mongoose.Schema({
     enum: ["Cash", "Insurance"],
   },
   nurseSSN: {
-    type: Number,
+    type: String,
     required: [true, "Please Mention nurse for this request"],
     validate: [
       async function (nurseSSN) {
@@ -64,7 +64,7 @@ requestSchema.virtual("nurse").get(async function () {
   return nurseId;
 });
 requestSchema.pre("save", async function (next) {
-  if (!this.isNew()) return next();
+  if (!this.isNew) return next();
   await notification.notify(
     this.nurse,
     "warning-warning",

@@ -27,6 +27,7 @@ const updateSchedule = async (doc, Model, userId, start, end) => {
 
 const checkUserSchedule = async (doc, Model, userId, next) => {
   const Schedule = await Model.findById(userId).select("schedule Name");
+  if (!Schedule) return false;
   Schedule["schedule"].forEach((element) => {
     if (doc.start <= element.end && element.start <= doc.end) {
       return next(

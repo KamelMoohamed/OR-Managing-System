@@ -6,6 +6,8 @@ const Equipment = require("./equipmentModel");
 const Scheduling = require("./../utils/Scheduling");
 const notification = require("./../utils/notification");
 const req = require("express/lib/request");
+const AppError = require("../utils/appError");
+const Supply = require("./../models/supplyModel");
 
 const operationSchema = new mongoose.Schema(
   {
@@ -23,7 +25,11 @@ const operationSchema = new mongoose.Schema(
       {
         type: mongoose.Schema.ObjectId,
         ref: "User",
-        required: [true, "Please mention lead doctor"],
+      },
+    ],
+    staffSSN: [
+      {
+        type: String,
       },
     ],
     rooms: [
@@ -31,7 +37,10 @@ const operationSchema = new mongoose.Schema(
         room: {
           type: mongoose.Schema.ObjectId,
           ref: "Room",
-          required: [true, "Please mention the operation room"],
+        },
+        RID: {
+          type: Number,
+          required: true,
         },
         start: {
           type: Date,
@@ -49,6 +58,10 @@ const operationSchema = new mongoose.Schema(
           type: mongoose.Schema.ObjectId,
           ref: "Equipment",
         },
+        equipID: {
+          type: Number,
+          required: true,
+        },
         start: {
           type: Date,
           required: [true, "please mention the start time "],
@@ -63,6 +76,14 @@ const operationSchema = new mongoose.Schema(
     patient: {
       type: mongoose.Schema.ObjectId,
       ref: "User",
+      defualt: async function () {
+        doc = await User.findOne({ SSN: this.patientSSN });
+        console.log(doc);
+        return doc.id;
+      },
+    },
+    patientSSN: {
+      type: String,
       required: true,
     },
     supplies: [
@@ -70,7 +91,10 @@ const operationSchema = new mongoose.Schema(
         id: {
           type: mongoose.Schema.ObjectId,
           ref: "Supply",
-          required: [true, "please enter supply id"],
+        },
+        SID: {
+          type: Number,
+          required: true,
         },
         quantity: {
           type: Number,
@@ -103,6 +127,9 @@ const operationSchema = new mongoose.Schema(
       //same doctor sending the request
       type: mongoose.Schema.ObjectId,
       ref: "User",
+    },
+    mainDoctorSSN: {
+      type: String,
       required: true,
     },
   },
@@ -128,6 +155,72 @@ operationSchema.virtual("end").get(function () {
 //   req.rooms = doc.rooms;
 // });
 
+operationSchema.pre("save", async function (next) {
+  //adding doctor id
+  const mainDoctor = await User.findOne({ SSN: this.mainDoctorSSN });
+  if (!mainDoctor)
+    return next(new AppError("there is no Doctor with this SSN", 404));
+  this.mainDoctor = mainDoctor.id;
+
+  // adding patient id
+  const patient = await User.findOne({ SSN: this.patientSSN });
+  if (!patient)
+    return next(new AppError("there is no patient with this SSN", 404));
+  this.patient = patient.id;
+
+  // adding staff ids
+  let staff = [];
+  for (let user of this.staffSSN) {
+    console.log(user);
+    const Doc = await User.findOne({ SSN: user });
+    if (!Doc) return next(new AppError("there is no staff with this SSN", 404));
+    staff.push(Doc.id);
+  }
+  this.staff = staff;
+
+  // adding rooms ids
+  let rooms = [];
+  for (let room of this.rooms) {
+    roomId = await Room.findOne({ RID: room.RID });
+    doc = {
+      RID: room.RID,
+      room: roomId.id,
+      start: room.start,
+      end: room.end,
+    };
+    rooms.push(doc);
+  }
+
+  this.rooms = rooms;
+
+  // adding supplies Ids
+  let Supplies = [];
+  for (let sup of this.supplies) {
+    supp = await Supplies.findOne({ SID: sup.SID });
+    doc = {
+      SID: sup.SID,
+      id: supp.id,
+      quantity: sup.quantity,
+    };
+    Supplies.push(doc);
+  }
+
+  this.supplies = Supplies;
+  // adding equipment Ids
+  let equipment = [];
+  for (let eq of this.equipments) {
+    equipment = await Equipment.findOne({ EID: sup.equipID });
+    doc = {
+      equip: equipment.id,
+      equipID: eq.equipID,
+      start: eq.start,
+      end: eq.end,
+    };
+    equipment.push(doc);
+  }
+
+  this.equipments = this.equipments;
+});
 // Updating staff, rooms, and patient schedule when updating operation
 operationSchema.post("findOneAndUpdate", async function () {
   const { _id } = this.getQuery();
