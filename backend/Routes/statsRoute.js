@@ -58,4 +58,8 @@ router
 router
   .route("/many-operation")
   .get(authController.protect, statsController.nStaffOperation);
+
+router
+  .route("/user-operations")
+  .get(authController.protect, statsController.userEach);
 module.exports = router;

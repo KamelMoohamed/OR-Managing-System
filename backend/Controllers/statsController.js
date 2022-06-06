@@ -2,6 +2,8 @@ const CatchAsync = require("./../utils/CatchAsync");
 const User = require("./../models/userModel");
 const Operation = require("./../models/operationModel");
 const Room = require("./../models/roomModel");
+const mongoose = require("mongoose");
+const AppError = require("../utils/appError");
 exports.staffNumber = CatchAsync(async (req, res, next) => {
   let groupby = {};
   if (req.body.groupby) {
@@ -140,13 +142,23 @@ exports.operationEach = CatchAsync(async (req, res, next) => {
   });
 });
 exports.userEach = CatchAsync(async (req, res, next) => {
+  if (["ORadmin", "admin"].includes(req.user.role))
+    return next(new AppError("you have no operations at all", 400));
   let group = {};
   let groupdate = {};
   if (req.body.groupdate) {
-    if (req.body.groupdate == "day") groupdate["$dayOfWeek"] = "$rooms.end";
-    else if (req.body.groupdate == "week") groupdate["$week"] = "$rooms.end";
-    else if (req.body.groupdate == "month") groupdate["$month"] = "$rooms.end";
-    else if (req.body.groupdate == "year") groupdate["$year"] = "$rooms.end";
+    if (req.body.groupdate == "day") {
+      groupdate["$dayOfWeek"] = "$rooms.end";
+      num = 7;
+    } else if (req.body.groupdate == "week") {
+      groupdate["$week"] = "$rooms.end";
+      num = 52;
+    } else if (req.body.groupdate == "month") {
+      groupdate["$month"] = "$rooms.end";
+      num = 12;
+    } else if (req.body.groupdate == "year") {
+      groupdate["$year"] = "$rooms.end";
+    }
     group[req.body.groupdate] = groupdate;
   }
   let match = {};
@@ -161,6 +173,21 @@ exports.userEach = CatchAsync(async (req, res, next) => {
   if (req.body.field) {
     group[req.body.field] = `$${req.body.field}`;
   }
+
+  let matchStaff = {};
+  if (req.user.role == "lead-doctor")
+    matchStaff = {
+      $or: [
+        { staff: { $in: [mongoose.Types.ObjectId(req.user.id)] } },
+        { mainDoctor: mongoose.Types.ObjectId(req.user.id) },
+      ],
+    };
+  else if (["doctor", "nurse", "lead-nurse"].includes(req.user.role))
+    matchStaff = {
+      staff: { $in: [mongoose.Types.ObjectId(req.user.id)] },
+    };
+  else if (req.user.role == "patient")
+    matchStaff = { patient: mongoose.Types.ObjectId(req.user.id) };
   const data = await Operation.aggregate([
     {
       $unwind: "$rooms",
@@ -169,12 +196,28 @@ exports.userEach = CatchAsync(async (req, res, next) => {
       $match: match,
     },
     {
+      $match: matchStaff,
+    },
+    {
       $group: {
         _id: group,
         number: { $sum: 0.5 },
       },
     },
   ]);
+  if (data.length != num) {
+    const arr = [...Array(num).keys()];
+    newarr = data.map((a) => a._id[`${req.body.groupdate}`]);
+    arr.forEach((el) => {
+      if (!newarr.includes(el)) {
+        index = {};
+        index["_id"] = {};
+        index._id[`${req.body.groupdate}`] = el;
+        index["number"] = 0;
+        data.push(index);
+      }
+    });
+  }
   res.status(200).json({
     data,
   });
