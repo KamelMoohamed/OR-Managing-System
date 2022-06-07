@@ -426,7 +426,7 @@ operationSchema.pre(/^find/, function (next) {
     })
     .populate({
       path: "patient",
-      select: "name SSN",
+      select: "name SSN phone birthDate",
     })
     .populate({
       path: "supplies.id",
