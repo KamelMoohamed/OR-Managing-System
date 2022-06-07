@@ -94,6 +94,35 @@ exports.replyOperation = CatchAsync(async (req, res, next) => {
     Message: " Your reply has been recorded",
   });
 });
+exports.previousOperations = CatchAsync(async (req, res, next) => {
+  const ops = await Operation.find({
+    rooms: { $elemMatch: { end: { $lte: Date.now() } } },
+  });
+  res.status(200).json({
+    status: "success",
+    operations: ops,
+  });
+});
+exports.upcomingOperations = CatchAsync(async (req, res, next) => {
+  const ops = await Operation.find({
+    rooms: { $elemMatch: { end: { $gte: Date.now() } } },
+    OperationStatus: "On Schedule",
+  });
+  res.status(200).json({
+    status: "success",
+    operations: ops,
+  });
+});
+exports.pendingOperations = CatchAsync(async (req, res, next) => {
+  const ops = await Operation.find({
+    rooms: { $elemMatch: { end: { $gte: Date.now() } } },
+    OperationStatus: "Pending",
+  });
+  res.status(200).json({
+    status: "success",
+    operations: ops,
+  });
+});
 exports.createOperation = handlerFactory.CreateOne(Operation);
 exports.getOperation = handlerFactory.getOne(Operation);
 exports.updateOperation = updateOperation;

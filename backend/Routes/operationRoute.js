@@ -3,6 +3,27 @@ const operationController = require("./../Controllers/operationController");
 const authController = require("../Controllers/authController");
 
 const router = express.Router();
+router
+  .route("/upcoming")
+  .get(
+    authController.protect,
+    authController.restrictTo("admin", "ORadmin"),
+    operationController.upcomingOperations
+  );
+router
+  .route("/pervious")
+  .get(
+    authController.protect,
+    authController.restrictTo("admin", "ORadmin"),
+    operationController.previousOperations
+  );
+router
+  .route("/pending")
+  .get(
+    authController.protect,
+    authController.restrictTo("admin", "ORadmin"),
+    operationController.pendingOperations
+  );
 
 router
   .route("/")
