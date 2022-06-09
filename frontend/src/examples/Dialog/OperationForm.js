@@ -9,7 +9,7 @@ import SuiBox from "../../components/SuiBox";
 import SuiInput from "../../components/SuiInput";
 import { useState } from "react";
 
-export default function FormDialog({buttonText}) {
+export default function FormDialog({ buttonText }) {
   const [open, setOpen] = useState(false);
 
   const [mainDoctorSSN, setMainDoctorSSN] = useState({ target: { value: "" } });
@@ -76,8 +76,9 @@ export default function FormDialog({buttonText}) {
           }),
         });
         const resData = await res.json();
-
-        console.log(resData);
+        if (resData.status === "fail") {
+          alert(resData.message);
+        }
         setOpen(false);
       } catch (err) {
         console.log(err);

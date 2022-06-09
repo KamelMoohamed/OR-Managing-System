@@ -42,7 +42,9 @@ function ContactUs() {
           }),
         });
         const resData = await res.json();
-        console.log(resData);
+        if (resData === "fail") {
+          alert(resData.message);
+        }
       } catch (err) {
         console.log(err);
       }

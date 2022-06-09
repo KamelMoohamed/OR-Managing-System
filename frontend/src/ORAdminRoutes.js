@@ -21,46 +21,11 @@ import AdminStaff from "./layouts/tables/AdminStaff";
 import AdminOperations from "./layouts/Operations/Admin/AdminOperations";
 import AdminStats from "./layouts/AdminStats/AdminStats";
 import Dashboard from "./layouts/dashboard/Dashboard";
+import SignUp from "layouts/authentication/sign-up/SignUp";
+import Login from "layouts/authentication/sign-in/Login";
+import ContactUs from "layouts/authentication/contact-us/ContactUs";
 
-const ORAdminRoutes = [
-  {
-    type: "collapse",
-    name: "Dashboard",
-    key: "dashboard-patient",
-    route: "/dashboard-patient",
-    icon: <Shop size="12px" />,
-    component: <DashboardPatient />,
-    noCollapse: true,
-  },
-  {
-    type: "collapse",
-    name: "Dashboard",
-    key: "dashboard",
-    route: "/dashboard",
-    icon: <Shop size="12px" />,
-    component: <Dashboard />,
-    noCollapse: true,
-  },
-  {
-    type: "collapse",
-    name: "Doctor Dashboard",
-    key: "dashboard-doctor",
-    route: "/dashboard-doctor",
-    icon: <Shop size="12px" />,
-    component: <DoctorDashboard />,
-    noCollapse: true,
-  },
-
-  {
-    type: "collapse",
-    name: "Operations",
-    key: "operations",
-    route: "/operations",
-    icon: <Office size="12px" />,
-    component: <DoctorsOperations />,
-    noCollapse: true,
-  },
-
+const routes = [
   {
     type: "collapse",
     name: "Operations Admin",
@@ -71,24 +36,6 @@ const ORAdminRoutes = [
     noCollapse: true,
   },
 
-  {
-    type: "collapse",
-    name: "Patients",
-    key: "patients",
-    route: "/patients",
-    icon: <Office size="12px" />,
-    component: <DoctorsPatients />,
-    noCollapse: true,
-  },
-  {
-    type: "collapse",
-    name: "Billing",
-    key: "billing",
-    route: "/billing",
-    icon: <CreditCard size="12px" />,
-    component: <Billing />,
-    noCollapse: true,
-  },
   {
     type: "collapse",
     name: "Rooms",
@@ -107,43 +54,6 @@ const ORAdminRoutes = [
     component: <AdminEquipment />,
     noCollapse: true,
   },
-  {
-    type: "collapse",
-    name: "Requests",
-    key: "requests",
-    route: "/requests",
-    icon: <Cube size="12px" />,
-    component: <Requests />,
-    noCollapse: false,
-  },
-  {
-    type: "collapse",
-    name: "Medical Record",
-    key: "medical-record",
-    route: "/medical-record",
-    icon: <Settings size="12px" />,
-    component: <MedicalRecord />,
-    noCollapse: true,
-  },
-  {
-    type: "collapse",
-    name: "Staff",
-    key: "staff-admin",
-    route: "/staff-admin",
-    icon: <Settings size="12px" />,
-    component: <AdminStaff />,
-    noCollapse: true,
-  },
-
-  {
-    type: "collapse",
-    name: "Stats",
-    key: "stats",
-    route: "/stats",
-    icon: <Settings size="12px" />,
-    component: <AdminStats />,
-    noCollapse: true,
-  },
 
   { type: "title", title: "Account Pages", key: "account-pages" },
 
@@ -156,6 +66,15 @@ const ORAdminRoutes = [
     component: <Profile />,
     noCollapse: true,
   },
+  {
+    type: "collapse",
+    name: "contact-us",
+    key: "contact-us",
+    route: "/contact-us",
+    icon: <CustomerSupport size="12px" />,
+    component: <ContactUs />,
+    noCollapse: true,
+  },
 ];
 
-export default ORAdminRoutes;
+export default routes;

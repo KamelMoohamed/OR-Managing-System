@@ -79,6 +79,11 @@ export const AuthContext = createContext({
   logout: () => {},
   userId: null,
   token: null,
+  isDoctor: false,
+  isPatient: false,
+  isNurse: false,
+  isAdmin: false,
+  isOrAdmin: false,
 });
 
 // Typechecking props for the SoftUIControllerProvider

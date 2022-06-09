@@ -21,6 +21,9 @@ import AdminStaff from "./layouts/tables/AdminStaff";
 import AdminOperations from "./layouts/Operations/Admin/AdminOperations";
 import AdminStats from "./layouts/AdminStats/AdminStats";
 import Dashboard from "./layouts/dashboard/Dashboard";
+import SignUp from "layouts/authentication/sign-up/SignUp";
+import Login from "layouts/authentication/sign-in/Login";
+import ContactUs from "layouts/authentication/contact-us/ContactUs";
 
 const routes = [
   {
@@ -147,8 +150,33 @@ const routes = [
     component: <Profile />,
     noCollapse: true,
   },
-
-
+  {
+    type: "collapse",
+    name: "sign-up",
+    key: "sign-up",
+    route: "/sign-up",
+    icon: <CustomerSupport size="12px" />,
+    component: <SignUp />,
+    noCollapse: true,
+  },
+  {
+    type: "collapse",
+    name: "sign-in",
+    key: "sign-in",
+    route: "/sign-in",
+    icon: <CustomerSupport size="12px" />,
+    component: <Login />,
+    noCollapse: true,
+  },
+  {
+    type: "collapse",
+    name: "contact-us",
+    key: "contact-us",
+    route: "/contact-us",
+    icon: <CustomerSupport size="12px" />,
+    component: <ContactUs />,
+    noCollapse: true,
+  },
 ];
 
 export default routes;

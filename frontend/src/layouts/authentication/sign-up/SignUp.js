@@ -60,7 +60,9 @@ function SignUp() {
       });
 
       const responseData = await response.json();
-      console.log(responseData);
+      if (responseData.status === "fail") {
+        alert(responseData.message);
+      }
       auth.login(responseData.data.user.role);
       auth.token = responseData.token;
       localStorage.setItem("jwt", responseData.token);

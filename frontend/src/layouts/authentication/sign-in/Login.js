@@ -45,6 +45,9 @@ function SignIn() {
         }),
       });
       const responseData = await response.json();
+      if (responseData.status === "fail") {
+        alert(responseData.message);
+      }
       auth.login(responseData.data.user.role);
       auth.token = responseData.token;
       localStorage.setItem("jwt", responseData.token);

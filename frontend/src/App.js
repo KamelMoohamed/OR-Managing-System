@@ -1,7 +1,7 @@
-import { useState, useEffect, useMemo, useContext, useCallback, React } from "react";
+import { useState, useEffect, useMemo, useCallback, React } from "react";
 
 // react-router components
-import { Routes, Route, Navigate, useLocation, BrowserRouter } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 
 // @mui material components
 import { ThemeProvider } from "@mui/material/styles";
@@ -17,16 +17,19 @@ import Configurator from "examples/Configurator";
 
 // Soft UI Dashboard React themes
 import theme from "assets/theme";
-import themeRTL from "assets/theme/theme-rtl";
 
 // RTL plugins
 import rtlPlugin from "stylis-plugin-rtl";
-import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
 
 // Soft UI Dashboard React routes
 import routes from "routes";
 import LogoutRoutes from "LogoutRoutes";
+import PatientRoutes from "PatientRoutes";
+import DoctorRoutes from "DoctorRoutes";
+import NurseRoutes from "NurseRoutes";
+import AdminRoutes from "AdminRoutes";
+import ORAdminRoutes from "ORAdminRoutes";
 
 // Soft UI Dashboard React contexts
 import { useSoftUIController, setMiniSidenav, setOpenConfigurator } from "context";
@@ -51,13 +54,14 @@ export default function App() {
   const [isPatient, setPatient] = useState(false);
   const [isNurse, setNurse] = useState(false);
   const [isAdmin, setAdmin] = useState(false);
-  const [isORAdmin, setORAdmin] = useState(false);
+  const [isOrAdmin, setORAdmin] = useState(false);
+  const [finalRoutes, setFinalRoutes] = useState(routes);
 
   const login = useCallback((role) => {
     if (role === "lead-doctor" || role === "doctor") {
       setIsLoggedIn(true);
       setDoctor(true);
-    } else if (role === "lead-doctor" || role === "doctor") {
+    } else if (role === "lead-nurse" || role === "nurse") {
       setIsLoggedIn(true);
       setNurse(true);
     } else if (role === "patient") {
@@ -141,14 +145,57 @@ export default function App() {
     </Routes>
   );
   useEffect(() => {
-    if (localStorage.getItem('login')) {
-      setR(
-        <Routes>
-          {getRoutes(routes)}
-          <Route path="*" element={<Navigate to="dashboard" />} />
-        </Routes>
-      );
+    if (isLoggedIn) {
+      if (isPatient) {
+        setFinalRoutes(PatientRoutes);
+        setR(
+          <Routes>
+            {getRoutes(PatientRoutes)}
+            <Route path="*" element={<Navigate to="dashboard" />} />
+          </Routes>
+        );
+      } else if (isDoctor) {
+        setFinalRoutes(DoctorRoutes);
+        setR(
+          <Routes>
+            {getRoutes(DoctorRoutes)}
+            <Route path="*" element={<Navigate to="dashboard" />} />
+          </Routes>
+        );
+      } else if (isNurse) {
+        setFinalRoutes(NurseRoutes);
+        setR(
+          <Routes>
+            {getRoutes(NurseRoutes)}
+            <Route path="*" element={<Navigate to="dashboard" />} />
+          </Routes>
+        );
+      } else if (isAdmin) {
+        setFinalRoutes(AdminRoutes);
+        setR(
+          <Routes>
+            {getRoutes(AdminRoutes)}
+            <Route path="*" element={<Navigate to="dashboard" />} />
+          </Routes>
+        );
+      } else if (isOrAdmin) {
+        setFinalRoutes(ORAdminRoutes);
+        setR(
+          <Routes>
+            {getRoutes(ORAdminRoutes)}
+            <Route path="*" element={<Navigate to="operations-admin" />} />
+          </Routes>
+        );
+      } else {
+        setR(
+          <Routes>
+            {getRoutes(routes)}
+            <Route path="*" element={<Navigate to="dashboard" />} />
+          </Routes>
+        );
+      }
     } else {
+      setFinalRoutes(LogoutRoutes);
       setR(
         <Routes>
           {getRoutes(LogoutRoutes)}
@@ -156,7 +203,7 @@ export default function App() {
         </Routes>
       );
     }
-  }, [isLoggedIn]);
+  }, [isLoggedIn, isPatient, isDoctor, isNurse, isOrAdmin, isAdmin]);
 
   const configsButton = (
     <SuiBox
@@ -190,7 +237,7 @@ export default function App() {
         logout: logout,
         isPatient: isPatient,
         isDoctor: isDoctor,
-        isOrAdmin: isORAdmin,
+        isOrAdmin: isOrAdmin,
         isAdmin: isAdmin,
         isNurse: isNurse,
       }}
@@ -203,7 +250,7 @@ export default function App() {
               color={sidenavColor}
               brand={brand}
               brandName="CuR Dashboard"
-              routes={routes}
+              routes={finalRoutes}
               onMouseEnter={handleOnMouseEnter}
               onMouseLeave={handleOnMouseLeave}
             />

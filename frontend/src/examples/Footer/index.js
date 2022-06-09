@@ -1,18 +1,3 @@
-/**
-=========================================================
-* Soft UI Dashboard React - v3.1.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/soft-ui-dashboard-react
-* Copyright 2022 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
 // prop-types is a library for typechecking of props
 import PropTypes from "prop-types";
 
@@ -27,15 +12,15 @@ import SuiTypography from "components/SuiTypography";
 // Soft UI Dashboard React base styles
 import typography from "assets/theme/base/typography";
 
-    function Footer({ company, links }) {
-        console.log(company);
-        const { href, name } = company;
-        const { size } = typography;
+function Footer({ company, links }) {
+  console.log(company);
+  const { href, name } = company;
+  const { size } = typography;
 
   const renderLinks = () =>
     links.map((link) => (
       <SuiBox key={link.name} component="li" px={2} lineHeight={1}>
-        <Link href={link.href} >
+        <Link href={link.href}>
           <SuiTypography variant="button" fontWeight="regular" color="text">
             {link.name}
           </SuiTypography>
@@ -100,7 +85,10 @@ import typography from "assets/theme/base/typography";
 
 // Setting default values for the props of Footer
 Footer.defaultProps = {
-  company: { href: "https://www.facebook.com/1brahimMohamed", name: "Team 5 - Systems & Biomedical Engineering" },
+  company: {
+    href: "https://www.facebook.com/1brahimMohamed",
+    name: "Team 5 - Systems & Biomedical Engineering",
+  },
   links: [
     { href: "/home", name: "Home" },
     { href: "/staff", name: "Staff" },
