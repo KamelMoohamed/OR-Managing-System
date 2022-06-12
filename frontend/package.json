@@ -1,16 +1,12 @@
 {
-  "name": "soft-ui-dashboard-react",
+  "name": "CuOR",
   "version": "3.1.0",
-  "author": "Creative Tim",
+  "author": "SBME 2024 Second Year Team 5",
   "license": "SEE LICENSE IN <https://www.creative-tim.com/license>",
-  "description": "ReactJS version of Soft UI Dashboard by Creative Tim",
-  "homepage": "https://demos.creative-tim.com/soft-ui-dashboard-react/#/",
-  "bugs": {
-    "url": "https://github.com/creativetimofficial/soft-ui-dashboard-react/issues"
-  },
+  "description": "Operation Rooms Managment Systems",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/creativetimofficial/soft-ui-dashboard-react.git"
+    "url": "git+https://github.com/KamelMoohamed/OR-Managing-System"
   },
   "engines": {
     "node": "14 || 15 || 16",
@@ -45,6 +41,7 @@
     "react-scripts": "5.0.0",
     "stylis": "4.0.13",
     "stylis-plugin-rtl": "2.1.1",
+    "sweetalert": "^2.1.2",
     "uuid": "8.3.2",
     "web-vitals": "2.1.4"
   },

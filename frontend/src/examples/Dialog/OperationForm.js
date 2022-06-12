@@ -1,3 +1,6 @@
+// Alert Package
+import swal from "sweetalert";
+
 import * as React from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
@@ -77,7 +80,7 @@ export default function FormDialog({ buttonText }) {
         });
         const resData = await res.json();
         if (resData.status === "fail") {
-          alert(resData.message);
+          swal(resData.message);
         }
         setOpen(false);
       } catch (err) {

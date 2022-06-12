@@ -1,3 +1,6 @@
+// Alert Package
+import swal from "sweetalert";
+
 import { useState, useContext } from "react";
 
 // react-router-dom components
@@ -61,7 +64,7 @@ function SignUp() {
 
       const responseData = await response.json();
       if (responseData.status === "fail") {
-        alert(responseData.message);
+        swal(responseData.message);
       }
       auth.login(responseData.data.user.role);
       auth.token = responseData.token;
