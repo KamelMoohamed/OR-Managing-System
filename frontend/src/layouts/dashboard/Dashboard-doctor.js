@@ -128,7 +128,7 @@ function DoctorDashboard() {
         console.log(err);
       }
     };
-    fetchDay();
+    // fetchDay();
     getUpOpertaions();
     getDoctorMoney();
   }, []);
@@ -179,10 +179,10 @@ function DoctorDashboard() {
             </Grid>
             <Grid item xs={12} lg={6}>
               <Grid item xs={5} lg={12}>
-                <ImageCardWithText text = 'You have a surgery in one day, please be prepared'/>
+                <ImageCardWithText text="You have a surgery in one day, please be prepared" />
               </Grid>
               <Grid item xs={5} lg={12} mt={1}>
-                <ImageCardWithText text ='Dr Romaisaa Wants to see you, please refer to her'/>
+                <ImageCardWithText text="Dr Romaisaa Wants to see you, please refer to her" />
               </Grid>
             </Grid>
           </Grid>
@@ -234,7 +234,7 @@ function DoctorDashboard() {
             <NotificationsBox />
           </Grid>
           <Grid item xs={12} md={6} lg={4} sx={{ height: "100%" }}>
-              <BuildBy height={'40rem'}/>
+            <BuildBy height={"40rem"} />
           </Grid>
         </Grid>
       </SuiBox>

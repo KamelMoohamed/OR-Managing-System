@@ -31,15 +31,6 @@ function SidenavCard() {
   return (
     <Card sx={(theme) => card(theme, { miniSidenav })}>
       <CardContent sx={(theme) => cardContent(theme, { sidenavColor })}>
-        <SuiBox
-          bgColor="white"
-          width="2rem"
-          height="2rem"
-          borderRadius="md"
-          shadow="md"
-          mb={2}
-          sx={cardIconBox}
-        ></SuiBox>
         <SuiBox lineHeight={1}>
           <SuiBox mb={1.825} mt={1}></SuiBox>
           <SuiButton
