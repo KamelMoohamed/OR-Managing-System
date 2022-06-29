@@ -5,23 +5,25 @@
 ## Table of contents
 - [Overview](#overview)
   - [Introduction](#introduction)
-  - [Run the Project](#run)
+  - [Run the Project](#run-the-project)
 - [Frontend](#frontend)
   - [CSS](#css)
-  - [Colors](#colors-used) 
+  - [Colors](#colors-used)
   - [Grid](#grid)
   - [Fonts](#fonts)
   - [Borders](#borders)
   - [Helper Functions](#helper-functions)
   - [Routing System](#routing-system)
   - [Resources and credits](#resources-and-credits)
-- [Backend]()
-- [Team]()
+- [Backend](#backend)
+- [Team](#team)
 
 
 ## Overview
 
-### Introduction 
+### Introduction
+Pronounced as **"Cure" (kyo͝or)** CuOR+ is
+
 Operation rooms system with neat graphical user interface and incomparable user experience that helps the OR Department transfer the way they offer the service they got. In the system you
 can have a set of nice features that facilitates the operation process for the doctors, nurses, patients and the OR
 department admins. First you need to have an account made by the admin/through sign up page to access and explore the system.
@@ -113,12 +115,12 @@ This product makes usage of emotion and sx prop, as our friends from MUI.
 - We’ve used the `styled` utility inside `src/components/*` and `src/examples/*` files: `Styled`
 
 ### Responsive meta tag
-Material Design is developed mobile first, a strategy in which we optimize code for mobile devices first and then scale 
-up components as necessary using CSS media queries. To ensure proper rendering and touch zooming for all devices, 
+Material Design is developed mobile first, a strategy in which we optimize code for mobile devices first and then scale
+up components as necessary using CSS media queries. To ensure proper rendering and touch zooming for all devices,
 the responsive viewport meta tag was added to `<head>` inside the `public/index.html` file.
 
 ### Colors Used
-- Primary:  ![#cb0c9f](https://via.placeholder.com/15/cb0c9f/cb0c9f.png) `#cb0c9f` 
+- Primary:  ![#cb0c9f](https://via.placeholder.com/15/cb0c9f/cb0c9f.png) `#cb0c9f`
 - Secondary: ![#8392ab](https://via.placeholder.com/15/8392ab/8392ab.png) `#8392ab`
 - Info:  ![#17c1e8](https://via.placeholder.com/15/17c1e8/17c1e8.png) `#17c1e8`
 - Success: ![#8392ab](https://via.placeholder.com/15/82d616/82d616.png) `#82d616`
@@ -129,11 +131,11 @@ the responsive viewport meta tag was added to `<head>` inside the `public/index.
 
 
 ### Grid
-MUI grid is a powerful mobile-first flexbox grid which helps you build layouts of all shapes and sizes thanks to a 
+MUI grid is a powerful mobile-first flexbox grid which helps you build layouts of all shapes and sizes thanks to a
 twelve column system, five default responsive tiers, and dozens of predefined classes.
-  #### BreakPoints
-  We’ve changed the default MUI breakpoints with the following:
-```json
+#### BreakPoints
+We’ve changed the default MUI breakpoints with the following:
+```javascript
 breakpoints: {
   values: {
     xs: 0,
@@ -147,12 +149,12 @@ breakpoints: {
 ```
 
 ### Fonts
-We've created a set of predefined configuration for the typography to make if easy and simple for customization, it 
+We've created a set of predefined configuration for the typography to make if easy and simple for customization, it
 contains different types of styles for headings, paragraphs, font sizes, line heights, displays and other sort of styles
 for different purposes.
 
 #### Base Properties
-```json
+```javascript
 {
   fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
   fontWeightLight: 300,
@@ -167,11 +169,11 @@ for different purposes.
   fontSizeXL: pxToRem(20),
 }
 ```
-The `pxToRem()` is a helper function that helps you to convert px units to rem units, you can find this helper function 
+The `pxToRem()` is a helper function that helps you to convert px units to rem units, you can find this helper function
 on the `src/assets/theme/functions/pxToRem.js`
 
 #### Font Sizes
-```json
+```javascript
 {
   xxs: baseProperties.fontSizeXXS,
   xs: baseProperties.fontSizeXS,
@@ -182,8 +184,8 @@ on the `src/assets/theme/functions/pxToRem.js`
 }
 ```
 
-#### Line Heights 
-```json
+#### Line Heights
+```javascript
 {
   sm: 1.25,
   md: 1.5,
@@ -193,18 +195,18 @@ on the `src/assets/theme/functions/pxToRem.js`
 
 
 ### Borders
-We've created a set of predefined borders configuration to make if easy and simple for customization, it contains the 
+We've created a set of predefined borders configuration to make if easy and simple for customization, it contains the
 border color, border width and border radius properties.
 
 #### Border Color
 It's the default color for all of the borders.
 
-```json
+```javascript
 { borderColor: grey[300] }
 ```
 
 #### Border Width
-```json
+```javascript
 borderWidth: {
   0: 0,
   1: pxToRem(1),
@@ -217,7 +219,7 @@ borderWidth: {
 
 #### Border Raduis
 
-```json
+```javascript
 borderRadius: {
   xs: pxToRem(2),
   sm: pxToRem(4),
@@ -230,24 +232,24 @@ borderRadius: {
 ```
 
 ### Box Shadows
-We've created a set of predefined box-shadow configuration to make if easy and simple for customization, it contains 
+We've created a set of predefined box-shadow configuration to make if easy and simple for customization, it contains
 different types of soft box shadows that you need to style your elements with.
 
-```json
+```javascript
 {
   xs: boxShadow([0, 2], [9, -5], black.main, 0.15),
-  sm: boxShadow([0, 5], [10, 0], black.main, 0.12),
-  md: `${boxShadow([0, 4], [6, -1], black.light, 0.12)},
+          sm: boxShadow([0, 5], [10, 0], black.main, 0.12),
+          md: `${boxShadow([0, 4], [6, -1], black.light, 0.12)},
             ${boxShadow([0, 2], [4, -1], black.light, 0.07)}`,
-  lg: `${boxShadow([0, 8], [26, -4], black.light, 0.15)},
+          lg: `${boxShadow([0, 8], [26, -4], black.light, 0.15)},
        ${boxShadow([0, 8], [9, -5], black.light, 0.06)}`,
-  xl: boxShadow([0, 23], [45, -11], black.light, 0.25),
-  xxl: boxShadow([0, 20], [27, 0], black.main, 0.05),
-  inset: boxShadow([0, 1], [2, 0], black.main, 0.075, "inset"),
+          xl: boxShadow([0, 23], [45, -11], black.light, 0.25),
+          xxl: boxShadow([0, 20], [27, 0], black.main, 0.05),
+          inset: boxShadow([0, 1], [2, 0], black.main, 0.075, "inset"),
 }
 ```
 
-The `boxShadow()` is a helper function that simply creates a box shadow based on your values, you can find that helper 
+The `boxShadow()` is a helper function that simply creates a box shadow based on your values, you can find that helper
 function inside the `src/assets/theme/functions/boxShadow.js`.
 
 
@@ -279,7 +281,7 @@ import boxShadow from "assets/theme/functions/boxShadow";
 
 boxShadow(offset, radius, color, opacity, inset)
 ```
-The `offset` and `radius` should be an array, the `color` should be a hex color code, the `opacity` should be a number between 
+The `offset` and `radius` should be an array, the `color` should be a hex color code, the `opacity` should be a number between
 0 and 1 and the `inset` should be a string with the value of "inset"
 
 - linerGradient: The `linearGradient()` function helps you to simply create a linear gradient background color.
@@ -291,8 +293,8 @@ linearGradient(color, colorState, angle)
 It can take upto two colors for creating a linear gradient background color. The `angle` has a default value of 310.
 
 
-- gradientChartLine: The `gradientChartLine()` function helps you to simply create a gradient color for the lines of a 
-chart. The only use case of that helper function is for the chart components.
+- gradientChartLine: The `gradientChartLine()` function helps you to simply create a gradient color for the lines of a
+  chart. The only use case of that helper function is for the chart components.
 ```javascript
 import gradientChartLine from "assets/theme/functions/gradientChartLine";
 
@@ -300,7 +302,7 @@ gradientChartLine(chart, color, opacity)
 ```
 
 ### Routing System
-We’ve created these dynamic routes, so the `Sidenav` and `DefaultNavbar` components would not get too loaded with code. 
+We’ve created these dynamic routes, so the `Sidenav` and `DefaultNavbar` components would not get too loaded with code.
 You will find all our demo routes for the `Sidenav` in `src/routes.js` and for the `DefaultNavbar` in `src/page.routes.js`
 
 
